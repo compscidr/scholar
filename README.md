@@ -16,6 +16,10 @@ for _, article := range articles {
 ```
 
 ## Features
+Working:
+* Parses a user profile by user id
+* Extracts the publication title and scholar link
+
 TODO:
 * Extracts publication title, most relevant web link, PDF link, number of citations, number of online versions, link to 
 Google Scholar's article cluster for the work, Google Scholar's cluster of all works referencing the publication, and 
