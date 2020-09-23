@@ -1,5 +1,5 @@
 package scholar
 
-func test() {
+func Test() {
 	println("TEST")
 }
