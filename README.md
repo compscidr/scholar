@@ -1,5 +1,5 @@
-# go-scholar
-go-scholar is a Go module that implements a querier and parser for Google Scholar's output. Its classes can be used 
+# scholar
+scholar is a Go module that implements a querier and parser for Google Scholar's output. Its classes can be used 
 independently, but it can also be invoked as a command-line tool.
 
 This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
