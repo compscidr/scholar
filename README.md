@@ -7,6 +7,12 @@ This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
 # Usage
 ```
 import "github.com/compscidr/go-scholar/scholar"
+
+articles := QueryProfile("SbUmSEAAAAAJ")
+
+for _, article := range articles {
+	// do something with the article
+}
 ```
 
 ## Features
