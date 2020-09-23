@@ -4,6 +4,11 @@ independently, but it can also be invoked as a command-line tool.
 
 This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
 
+# Usage
+```
+import "github.com/compscidr/go-scholar/scholar"
+```
+
 ## Features
 TODO:
 * Extracts publication title, most relevant web link, PDF link, number of citations, number of online versions, link to 
