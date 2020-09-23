@@ -1,9 +1,30 @@
 package main
 
 import (
-	"github.com/compscidr/go-scholar/scholar"
+	"flag"
+	"fmt"
+	"github.com/compscidr/scholar/scholar"
 )
 
 func main() {
-	scholar.Test()
+	userPtr := flag.String("user", "", "user profile to retrieve")
+	flag.Parse()
+
+	if *userPtr == "" {
+		flag.Usage()
+		return
+	}
+
+	fmt.Println("Searching for user: " + *userPtr)
+	user := *userPtr
+	articles := scholar.QueryProfile(user)
+
+	if len(articles) == 0 {
+		fmt.Println("Not found")
+		return
+	}
+
+	for _, article := range articles {
+		fmt.Println(article)
+	}
 }
