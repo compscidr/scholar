@@ -48,7 +48,3 @@ func QueryProfile(user string) [] Article {
 
 	return articles
 }
-
-func Test() {
-	println("TEST")
-}
