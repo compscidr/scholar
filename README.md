@@ -17,8 +17,9 @@ for _, article := range articles {
 
 ## Features
 Working:
-* Parses a user profile by user id
-* Extracts the publication title and scholar link
+* Queries and parses a user profile by user id
+* Extracts the publication title, url, year, number of citations, number of different versions of the same article,
+and the URL to the citations. Still working on getting the excerpt, the URL to versions, and the clusterID.
 
 TODO:
 * Extracts publication title, most relevant web link, PDF link, number of citations, number of online versions, link to 
