@@ -1,9 +1,9 @@
 package main
 
 import (
-	"./scholar"
 	"flag"
 	"fmt"
+	"github.com/compscidr/scholar/scholar"
 )
 
 func main() {
