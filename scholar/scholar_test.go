@@ -2,8 +2,8 @@ package scholar
 
 import (
 	"fmt"
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func TestGetArticles(t *testing.T) {
