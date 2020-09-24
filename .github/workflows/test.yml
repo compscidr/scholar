@@ -15,7 +15,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: go get
-      run: go get github.com/compscidr/scholar/scholar
+      run: go get ./...
     - name: go build
       run: go build
     - name: Test
