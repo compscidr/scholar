@@ -16,6 +16,8 @@ jobs:
       uses: actions/checkout@v2
     - name: Set GOPATH
       run: go env -w GOPATH=$HOME/go
+    - name: Set GOBIN
+      run: mkdir bin && export GOBIN=$GOPATH/bin
     - name: go get
       run: go get ./...
     - name: go build
