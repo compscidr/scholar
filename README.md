@@ -8,7 +8,8 @@ This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
 ```
 import "github.com/compscidr/scholar"
 
-articles := QueryProfile("SbUmSEAAAAAJ")
+sch := scholar.New()
+articles := sch.QueryProfile("SbUmSEAAAAAJ")
 
 for _, article := range articles {
 	// do something with the article
@@ -19,6 +20,8 @@ for _, article := range articles {
 Working:
 * Queries and parses a user profile by user id to get basic publication data
 * Queries each of the articles listed (up to 80) and parses the results for extra information
+* Caches the profile for a day, and articles for a week (need to confirm this is working)
+  * This is in memory, so if the program is restarted, the cache is lost
 
 ## TODO:
 * Configurable limit to number of articles to query in one go
