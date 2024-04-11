@@ -19,14 +19,12 @@ jobs:
 #    - name: Set GOBIN
 #      run: mkdir bin && export GOBIN=$GOPATH/bin
     - name: Build and Run Scholar Tests
-      working-directory: scholar
       run: |
-        go get
-        go build
-        go test
+        go get ./scholar
+        go build ./scholar
+#        go test ./scholar
     - name: Build and Run Scholar-Example Tests
-      working-directory: scholar-example
       run: |
-        go get
-        go build
-        go test
+        go get ./scholar-example
+        go build ./scholar-example
+        go test ./scholar-example
