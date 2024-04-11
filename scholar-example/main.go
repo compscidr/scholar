@@ -17,6 +17,8 @@ func main() {
 
 	fmt.Println("Searching for user: " + *userPtr)
 	user := *userPtr
+
+	//articles := scholar.QueryProfileDumpResponse(user, true)
 	articles := scholar.QueryProfile(user)
 
 	if len(articles) == 0 {
