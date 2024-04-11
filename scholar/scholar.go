@@ -12,24 +12,24 @@ const BaseURL = "http://scholar.google.com"
 const AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0"
 
 type Article struct {
-	title string
-	url string
-	year int
+	title        string
+	url          string
+	year         int
 	numCitations int
-	numVersion int
-	clusterId string
+	numVersion   int
+	clusterId    string
 	urlCitations string
-	urlVersions string
-	urlCitation string
-	excerpt string
+	urlVersions  string
+	urlCitation  string
+	excerpt      string
 }
 
-func QueryProfile(user string) [] Article {
+func QueryProfile(user string) []Article {
 	var articles []Article
 	// todo: make page size configurable
 	client := &http.Client{}
 
-	req, err := http.NewRequest("GET", BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=80", nil)
+	req, err := http.NewRequest("GET", BaseURL+"/citations?user="+user+"&cstart=0&pagesize=80", nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -58,7 +58,7 @@ func QueryProfile(user string) [] Article {
 		article.urlCitations, _ = s.Find(".gsc_a_c").Find("a").Attr("href")
 
 		fmt.Println(BaseURL + tempURL)
-		req2, err2 := http.NewRequest("GET", BaseURL + tempURL, nil)
+		req2, err2 := http.NewRequest("GET", BaseURL+tempURL, nil)
 		if err2 != nil {
 			log.Fatalln(err)
 		}

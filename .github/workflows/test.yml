@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.14.x]
+        go-version: [1.21.x]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -14,13 +14,19 @@ jobs:
         go-version: ${{ matrix.go-version }}
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: Set GOPATH
-      run: go env -w GOPATH=$HOME/go
-    - name: Set GOBIN
-      run: mkdir bin && export GOBIN=$GOPATH/bin
-    - name: go get
-      run: go get ./...
-    - name: go build
-      run: go build
-    - name: Test
-      run: go test ./...
+#    - name: Set GOPATH
+#      run: go env -w GOPATH=$HOME/go
+#    - name: Set GOBIN
+#      run: mkdir bin && export GOBIN=$GOPATH/bin
+    - name: Build and Run Scholar Tests
+      working-directory: scholar
+      run: |
+        go get
+        go build
+        go test
+    - name: Build and Run Scholar-Example Tests
+      working-directory: scholar-example
+      run: |
+        go get
+        go build
+        go test

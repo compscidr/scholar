@@ -6,7 +6,7 @@ This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
 
 # Usage
 ```
-import "github.com/compscidr/go-scholar/scholar"
+import "github.com/compscidr/scholar"
 
 articles := QueryProfile("SbUmSEAAAAAJ")
 
