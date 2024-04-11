@@ -14,15 +14,10 @@ jobs:
         go-version: ${{ matrix.go-version }}
     - name: Checkout code
       uses: actions/checkout@v4
-#    - name: Set GOPATH
-#      run: go env -w GOPATH=$HOME/go
-#    - name: Set GOBIN
-#      run: mkdir bin && export GOBIN=$GOPATH/bin
     - name: Build and Run Scholar Tests
       run: |
-        go build ./scholar
-#        go test ./scholar
+        go build ./scholar 
+        go test ./scholar
     - name: Build and Run Scholar-Example Tests
       run: |
-        go build ./scholar-example
         go test ./scholar-example
