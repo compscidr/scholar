@@ -20,11 +20,11 @@ jobs:
 #      run: mkdir bin && export GOBIN=$GOPATH/bin
     - name: Build and Run Scholar Tests
       run: |
-        go get ./scholar
+#        go get ./scholar
         go build ./scholar
 #        go test ./scholar
     - name: Build and Run Scholar-Example Tests
       run: |
-        go get ./scholar-example
+#        go get ./scholar-example
         go build ./scholar-example
         go test ./scholar-example
