@@ -15,7 +15,8 @@ func TestScholarQuerier(t *testing.T) {
 }
 
 func TestProfileQuerier(t *testing.T) {
-	articles := QueryProfile("SbUmSEAAAAAJ")
+	sch := New()
+	articles := sch.QueryProfile("SbUmSEAAAAAJ")
 	assert.NotEmpty(t, articles)
 
 	for _, article := range articles {

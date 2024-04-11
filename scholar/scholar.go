@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
+	cmap "github.com/orcaman/concurrent-map/v2"
 	"io"
 	"log"
 	"net/http"
@@ -14,6 +15,8 @@ import (
 
 const BaseURL = "http://scholar.google.com"
 const AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0"
+const MAX_TIME_PROFILE = time.Second * 3600 * 24     // 1 day
+const MAX_TIME_ARTICLE = time.Second * 3600 * 24 * 7 // 1 week
 
 type Article struct {
 	title               string
@@ -36,20 +39,89 @@ type Article struct {
 	lastRetrieved       time.Time
 }
 
+type Profile struct {
+	user          string
+	lastRetrieved time.Time
+	articles      []string // list of article URLs - we'd still need to look them up in the article map
+}
+
+type Scholar struct {
+	articles cmap.ConcurrentMap[string, Article] // map of articles by URL
+	profile  cmap.ConcurrentMap[string, Profile] // map of profile by user string
+}
+
+func New() Scholar {
+	return Scholar{
+		articles: cmap.New[Article](),
+		profile:  cmap.New[Profile](),
+	}
+}
+
 func (a Article) String() string {
 	return "Article(\n  title=" + a.title + "\n  authors=" + a.authors + "\n  scholarURL=" + a.scholarURL + "\n  year=" + strconv.Itoa(a.year) + "\n  month=" + strconv.Itoa(a.month) + "\n  day=" + strconv.Itoa(a.day) + "\n  numCitations=" + strconv.Itoa(a.numCitations) + "\n  articles=" + strconv.Itoa(a.articles) + "\n  description=" + a.description + "\n  pdfURL=" + a.pdfURL + "\n  journal=" + a.journal + "\n  volume=" + a.volume + "\n  pages=" + a.pages + "\n  publisher=" + a.publisher + "\n  scholarCitedByURL=" + strings.Join(a.scholarCitedByURLs, ", ") + "\n  scholarVersionsURL=" + strings.Join(a.scholarVersionsURLs, ", ") + "\n  scholarRelatedURL=" + strings.Join(a.scholarRelatedURLs, ", ") + "\n  lastRetrieved=" + a.lastRetrieved.String() + "\n)"
 }
 
-func QueryProfile(user string) []Article {
-	return QueryProfileDumpResponse(user, false)
+func (sch Scholar) QueryProfile(user string) []Article {
+	return sch.QueryProfileDumpResponse(user, true, false)
 }
 
-func QueryProfileDumpResponse(user string, dumpResponse bool) []Article {
+func (sch Scholar) QueryProfileWithCache(user string) []Article {
+	if sch.profile.Has(user) {
+		p, _ := sch.profile.Get(user)
+		lastAccess := p.lastRetrieved
+		if (time.Now().Sub(lastAccess)) > MAX_TIME_PROFILE {
+			println("Profile cache expired for user: " + user)
+			sch.profile.Remove(user)
+			articles := sch.QueryProfileDumpResponse(user, true, false)
+			var articleList []string
+			for _, article := range articles {
+				articleList = append(articleList, article.scholarURL)
+			}
+			sch.profile.Set(user, Profile{user: user, lastRetrieved: time.Now(), articles: articleList})
+		} else {
+			println("Profile cache hit for user: " + user)
+			// cache hit, return the articles
+			articles := make([]Article, 0)
+			for _, articleURL := range p.articles {
+				if sch.articles.Has(articleURL) {
+					cacheArticle, _ := sch.articles.Get(articleURL)
+					if (time.Now().Sub(cacheArticle.lastRetrieved)) > MAX_TIME_ARTICLE {
+						println("Cache expired for article" + articleURL)
+						article := sch.QueryArticle(articleURL, Article{}, false)
+						sch.articles.Set(articleURL, article)
+						articles = append(articles, article)
+					} else {
+						println("Cache hit for article" + articleURL)
+						articles = append(articles, cacheArticle)
+					}
+				} else {
+					// cache miss, query the article
+					println("Cache miss for article" + articleURL)
+					article := sch.QueryArticle(articleURL, Article{}, false)
+					articles = append(articles, article)
+					sch.articles.Set(articleURL, article)
+				}
+			}
+			return articles
+		}
+
+	}
+	return sch.QueryProfileDumpResponse(user, true, false)
+}
+
+// QueryProfileDumpResponse queries the profile of a user and returns a list of articles
+// if queryArticles is true, it will also query the articles for extra information which isn't present on the profile page
+//
+//	we may wish to set this to false if we are only interested in some article info, or we have a cache hit and we just
+//	want to get updated information from the profile page only to save requests
+//
+// if dumpResponse is true, it will print the response to stdout (useful for debugging)
+func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, dumpResponse bool) []Article {
 	var articles []Article
 	client := &http.Client{}
 
 	// todo: make page size configurable, also support getting more than one page of citations
-	req, err := http.NewRequest("GET", BaseURL+"/citations?user="+user+"&cstart=0&pagesize=80", nil)
+	req, err := http.NewRequest("GET", BaseURL+"/citations?user="+user+"&cstart=0&pagesize=1", nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -87,16 +159,36 @@ func QueryProfileDumpResponse(user string, dumpResponse bool) []Article {
 		article.year, _ = strconv.Atoi(s.Find(".gsc_a_y").Find("span").Text())
 		article.numCitations, _ = strconv.Atoi(s.Find(".gsc_a_c").Children().First().Text())
 
-		// go to the article detail page to get rest of info (perhaps we want to make this configurable if someone
-		// doesn't need the extra data and wants to save on requests
-		article = QueryArticle(BaseURL+tempURL, article, dumpResponse)
+		if queryArticles {
+			if sch.articles.Has(BaseURL + tempURL) {
+				// hit the cache
+				cacheArticle, _ := sch.articles.Get(BaseURL + tempURL)
+				if (time.Now().Sub(article.lastRetrieved)) > MAX_TIME_ARTICLE {
+					println("Cache expired for article" + BaseURL + tempURL)
+					// expired cache entry, replace it
+					sch.articles.Remove(BaseURL + tempURL)
+					article = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
+					sch.articles.Set(BaseURL+tempURL, article)
+				} else {
+					println("Cache hit for article" + BaseURL + tempURL)
+					// not expired, update any new information
+					cacheArticle.numCitations = article.numCitations // update the citations since thats all that might change
+					article = cacheArticle
+					sch.articles.Set(BaseURL+tempURL, article)
+				}
+			} else {
+				println("Cache miss for article" + BaseURL + tempURL)
+				article = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
+				sch.articles.Set(BaseURL+tempURL, article)
+			}
+		}
 		articles = append(articles, article)
 	})
 
 	return articles
 }
 
-func QueryArticle(url string, article Article, dumpResponse bool) Article {
+func (sch Scholar) QueryArticle(url string, article Article, dumpResponse bool) Article {
 	fmt.Println("PULLING ARTICLE: " + url)
 	article.scholarURL = url
 	client := &http.Client{}

@@ -18,8 +18,9 @@ func main() {
 	fmt.Println("Searching for user: " + *userPtr)
 	user := *userPtr
 
-	//articles := scholar.QueryProfileDumpResponse(user, true)
-	articles := scholar.QueryProfile(user)
+	sch := scholar.New()
+	//articles := sch.QueryProfileDumpResponse(user, true)
+	articles := sch.QueryProfile(user)
 
 	if len(articles) == 0 {
 		fmt.Println("Not found")

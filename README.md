@@ -17,20 +17,17 @@ for _, article := range articles {
 
 ## Features
 Working:
-* Queries and parses a user profile by user id
-* Extracts the publication title, url, year, number of citations, number of different versions of the same article,
-and the URL to the citations. Still working on getting the excerpt, the URL to versions, and the clusterID.
+* Queries and parses a user profile by user id to get basic publication data
+* Queries each of the articles listed (up to 80) and parses the results for extra information
 
-TODO:
-* Extracts publication title, most relevant web link, PDF link, number of citations, number of online versions, link to 
-Google Scholar's article cluster for the work, Google Scholar's cluster of all works referencing the publication, and 
-excerpt of content.
-* Extracts total number of hits as reported by Scholar (new in version 2.5)
-*  Supports the full range of advanced query options provided by Google Scholar, such as title-only search, publication 
-date timeframes, and inclusion/exclusion of patents and citations.
-*  Supports article cluster IDs, i.e., information relating to the variants of an article already identified by Google 
-Scholar
-*  Supports retrieval of citation details in standard external formats as provided by Google Scholar, including BibTeX 
-and EndNote.
-*  Command-line tool prints entries in CSV format, simple plain text, or in the citation export format.
-*  Cookie support for higher query volume, including ability to persist cookies to disk across invocations.
+## TODO:
+* Configurable limit to number of articles to query in one go
+* Pagination of articles
+* Add throttling to avoid hitting the rate limit (figure out what the limit is)
+* Cache the results of queries so we aren't hitting Google Scholar's servers every time (if we do too much we get a 429)
+  * Perhaps only hit the main profile page once a day, and the article pages once a week
+  * Need to think about how this might work with web traffic - can it be in memory or should it be on disk?
+    * If in memory, what happens if the program is restarted, or if the computer is restarted? It will lose the cache and we will hit the throttle limits
+
+## Possible throttle info:
+https://stackoverflow.com/questions/60271587/how-long-is-the-error-429-toomanyrequests-cooldown
