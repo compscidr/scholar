@@ -69,7 +69,7 @@ func (sch Scholar) QueryProfileWithCache(user string) []Article {
 	if sch.profile.Has(user) {
 		p, _ := sch.profile.Get(user)
 		lastAccess := p.lastRetrieved
-		if (time.Now().Sub(lastAccess)) > MAX_TIME_PROFILE {
+		if (time.Now().Sub(lastAccess)).Seconds() > MAX_TIME_PROFILE.Seconds() {
 			println("Profile cache expired for user: " + user)
 			sch.profile.Remove(user)
 			articles := sch.QueryProfileDumpResponse(user, true, false)
