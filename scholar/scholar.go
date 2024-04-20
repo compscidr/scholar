@@ -85,18 +85,18 @@ func (sch Scholar) QueryProfileWithCache(user string) []Article {
 			for _, articleURL := range p.articles {
 				if sch.articles.Has(articleURL) {
 					cacheArticle, _ := sch.articles.Get(articleURL)
-					if (time.Now().Sub(cacheArticle.lastRetrieved)) > MAX_TIME_ARTICLE {
-						println("Cache expired for article" + articleURL)
+					if (time.Now().Sub(cacheArticle.lastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
+						println("Cache expired for article: " + articleURL + "\nLast Retrieved: " + cacheArticle.lastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.lastRetrieved).String())
 						article := sch.QueryArticle(articleURL, Article{}, false)
 						sch.articles.Set(articleURL, article)
 						articles = append(articles, article)
 					} else {
-						println("Cache hit for article" + articleURL)
+						println("Cache hit for article: " + articleURL)
 						articles = append(articles, cacheArticle)
 					}
 				} else {
 					// cache miss, query the article
-					println("Cache miss for article" + articleURL)
+					println("Cache miss for article: " + articleURL)
 					article := sch.QueryArticle(articleURL, Article{}, false)
 					articles = append(articles, article)
 					sch.articles.Set(articleURL, article)
@@ -105,8 +105,19 @@ func (sch Scholar) QueryProfileWithCache(user string) []Article {
 			return articles
 		}
 
+	} else {
+		println("Profile cache miss for user: " + user)
+		articles := sch.QueryProfileDumpResponse(user, true, false)
+		var articleList []string
+		for _, article := range articles {
+			articleList = append(articleList, article.scholarURL)
+		}
+		sch.profile.Set(user, Profile{user: user, lastRetrieved: time.Now(), articles: articleList})
+		return articles
 	}
-	return sch.QueryProfileDumpResponse(user, true, false)
+
+	println("Shouldn't have got here")
+	return []Article{}
 }
 
 // QueryProfileDumpResponse queries the profile of a user and returns a list of articles
@@ -163,8 +174,8 @@ func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, dum
 			if sch.articles.Has(BaseURL + tempURL) {
 				// hit the cache
 				cacheArticle, _ := sch.articles.Get(BaseURL + tempURL)
-				if (time.Now().Sub(article.lastRetrieved)) > MAX_TIME_ARTICLE {
-					println("Cache expired for article" + BaseURL + tempURL)
+				if (time.Now().Sub(article.lastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
+					println("Cache expired for article" + BaseURL + tempURL + "\nLast Retrieved: " + cacheArticle.lastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.lastRetrieved).String())
 					// expired cache entry, replace it
 					sch.articles.Remove(BaseURL + tempURL)
 					article = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)

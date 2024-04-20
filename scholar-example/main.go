@@ -20,7 +20,8 @@ func main() {
 
 	sch := scholar.New()
 	//articles := sch.QueryProfileDumpResponse(user, true)
-	articles := sch.QueryProfile(user)
+	//articles := sch.QueryProfile(user)
+	articles := sch.QueryProfileWithCache(user)
 
 	if len(articles) == 0 {
 		fmt.Println("Not found")
@@ -28,6 +29,16 @@ func main() {
 	}
 
 	for _, article := range articles {
+		fmt.Println(article)
+	}
+
+	cachedArticles := sch.QueryProfileWithCache(user)
+	if len(articles) == 0 {
+		fmt.Println("Not found")
+		return
+	}
+
+	for _, article := range cachedArticles {
 		fmt.Println(article)
 	}
 }
