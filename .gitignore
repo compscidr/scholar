@@ -16,3 +16,4 @@ go-scholar
 # vendor/
 
 .idea
+scholar-example

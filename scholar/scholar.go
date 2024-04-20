@@ -61,18 +61,18 @@ func (a Article) String() string {
 	return "Article(\n  title=" + a.title + "\n  authors=" + a.authors + "\n  scholarURL=" + a.scholarURL + "\n  year=" + strconv.Itoa(a.year) + "\n  month=" + strconv.Itoa(a.month) + "\n  day=" + strconv.Itoa(a.day) + "\n  numCitations=" + strconv.Itoa(a.numCitations) + "\n  articles=" + strconv.Itoa(a.articles) + "\n  description=" + a.description + "\n  pdfURL=" + a.pdfURL + "\n  journal=" + a.journal + "\n  volume=" + a.volume + "\n  pages=" + a.pages + "\n  publisher=" + a.publisher + "\n  scholarCitedByURL=" + strings.Join(a.scholarCitedByURLs, ", ") + "\n  scholarVersionsURL=" + strings.Join(a.scholarVersionsURLs, ", ") + "\n  scholarRelatedURL=" + strings.Join(a.scholarRelatedURLs, ", ") + "\n  lastRetrieved=" + a.lastRetrieved.String() + "\n)"
 }
 
-func (sch Scholar) QueryProfile(user string) []Article {
-	return sch.QueryProfileDumpResponse(user, true, false)
+func (sch Scholar) QueryProfile(user string, limit int) []Article {
+	return sch.QueryProfileDumpResponse(user, true, limit, false)
 }
 
-func (sch Scholar) QueryProfileWithCache(user string) []Article {
+func (sch Scholar) QueryProfileWithCache(user string, limit int) []Article {
 	if sch.profile.Has(user) {
 		p, _ := sch.profile.Get(user)
 		lastAccess := p.lastRetrieved
 		if (time.Now().Sub(lastAccess)).Seconds() > MAX_TIME_PROFILE.Seconds() {
 			println("Profile cache expired for user: " + user)
 			sch.profile.Remove(user)
-			articles := sch.QueryProfileDumpResponse(user, true, false)
+			articles := sch.QueryProfileDumpResponse(user, true, limit, false)
 			var articleList []string
 			for _, article := range articles {
 				articleList = append(articleList, article.scholarURL)
@@ -107,7 +107,7 @@ func (sch Scholar) QueryProfileWithCache(user string) []Article {
 
 	} else {
 		println("Profile cache miss for user: " + user)
-		articles := sch.QueryProfileDumpResponse(user, true, false)
+		articles := sch.QueryProfileDumpResponse(user, true, limit, false)
 		var articleList []string
 		for _, article := range articles {
 			articleList = append(articleList, article.scholarURL)
@@ -127,12 +127,12 @@ func (sch Scholar) QueryProfileWithCache(user string) []Article {
 //	want to get updated information from the profile page only to save requests
 //
 // if dumpResponse is true, it will print the response to stdout (useful for debugging)
-func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, dumpResponse bool) []Article {
+func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) []Article {
 	var articles []Article
 	client := &http.Client{}
 
 	// todo: make page size configurable, also support getting more than one page of citations
-	req, err := http.NewRequest("GET", BaseURL+"/citations?user="+user+"&cstart=0&pagesize=1", nil)
+	req, err := http.NewRequest("GET", BaseURL+"/citations?user="+user+"&cstart=0&pagesize="+strconv.Itoa(limit), nil)
 	if err != nil {
 		log.Fatalln(err)
 	}

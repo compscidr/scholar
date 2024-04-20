@@ -22,9 +22,9 @@ Working:
 * Queries each of the articles listed (up to 80) and parses the results for extra information
 * Caches the profile for a day, and articles for a week (need to confirm this is working)
   * This is in memory, so if the program is restarted, the cache is lost
+* Configurable limit to number of articles to query in one go
 
 ## TODO:
-* Configurable limit to number of articles to query in one go
 * Pagination of articles
 * Add throttling to avoid hitting the rate limit (figure out what the limit is)
 * Cache the results of queries so we aren't hitting Google Scholar's servers every time (if we do too much we get a 429)
