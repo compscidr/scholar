@@ -16,8 +16,9 @@ jobs:
       uses: actions/checkout@v4
     - name: Build and Run Scholar Tests
       run: |
-        go build ./scholar 
-        go test ./scholar
+        cd scholar
+        go build 
+        go test
     - name: Build and Run Scholar-Example Tests
       run: |
         cd scholar-example
