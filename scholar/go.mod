@@ -1,4 +1,4 @@
-module github.com/compscidr/scholar
+module github.com/compscidr/scholar/scholar
 
 go 1.22.2
 

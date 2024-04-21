@@ -21,5 +21,6 @@ jobs:
     - name: Build and Run Scholar-Example Tests
       run: |
         cd scholar-example
+        go work use .
         go build
         go test
