@@ -9,7 +9,7 @@ This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
 import "github.com/compscidr/scholar"
 
 sch := scholar.New()
-articles := sch.QueryProfile("SbUmSEAAAAAJ")
+articles := sch.QueryProfile("SbUmSEAAAAAJ", 1)
 
 for _, article := range articles {
 	// do something with the article
