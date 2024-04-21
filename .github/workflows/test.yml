@@ -20,4 +20,6 @@ jobs:
         go test ./scholar
     - name: Build and Run Scholar-Example Tests
       run: |
-        go test ./scholar-example
+        cd scholar-example
+        go build
+        go test
