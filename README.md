@@ -27,10 +27,7 @@ Working:
 ## TODO:
 * Pagination of articles
 * Add throttling to avoid hitting the rate limit (figure out what the limit is)
-* Cache the results of queries so we aren't hitting Google Scholar's servers every time (if we do too much we get a 429)
-  * Perhaps only hit the main profile page once a day, and the article pages once a week
-  * Need to think about how this might work with web traffic - can it be in memory or should it be on disk?
-    * If in memory, what happens if the program is restarted, or if the computer is restarted? It will lose the cache and we will hit the throttle limits
+* Add on-disk caching so that if program restarts the cache is not lost
 
 ## Possible throttle info:
 https://stackoverflow.com/questions/60271587/how-long-is-the-error-429-toomanyrequests-cooldown
