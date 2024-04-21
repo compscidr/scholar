@@ -1,4 +1,4 @@
-package scholar
+package go_scholar
 
 import (
 	"bytes"
@@ -274,7 +274,7 @@ func (sch Scholar) QueryArticle(url string, article Article, dumpResponse bool) 
 			article.articles += 1
 			articles := s.Find(".gsc_oci_value")
 			articles.Find(".gsc_oci_merged_snippet").Each(func(i int, s *goquery.Selection) {
-				// each one of these is an article. For an example with multiple see: https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ECQMeb0AAAAJ&citation_for_view=ECQMeb0AAAAJ:u5HHmVD_uO8C
+				// each one of these is an article. For an scholar-example with multiple see: https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ECQMeb0AAAAJ&citation_for_view=ECQMeb0AAAAJ:u5HHmVD_uO8C
 				// this seems to happen if the entry is a book and there are articles within it
 				s.Find(".gsc_oms_link").Each(func(i int, l *goquery.Selection) {
 					linkText := l.Text()

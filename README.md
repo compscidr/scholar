@@ -6,7 +6,7 @@ This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
 
 # Usage
 ```
-import "github.com/compscidr/scholar/scholar"
+import "github.com/compscidr/scholar"
 
 sch := scholar.New()
 articles := sch.QueryProfile("SbUmSEAAAAAJ", 1)

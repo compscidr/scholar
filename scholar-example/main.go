@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/compscidr/scholar/scholar"
+	scholar "github.com/compscidr/scholar"
 )
 
 func main() {
