@@ -1,4 +1,4 @@
-package scholar
+package go_scholar
 
 import (
 	"fmt"
