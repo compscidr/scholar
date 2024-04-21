@@ -15,39 +15,39 @@ import (
 
 const BaseURL = "http://scholar.google.com"
 const AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0"
-const MAX_TIME_PROFILE = time.Second * 3600 * 24     // 1 day
+const MAX_TIME_PROFILE = time.Second * 3600 * 24     // 1 Day
 const MAX_TIME_ARTICLE = time.Second * 3600 * 24 * 7 // 1 week
 
 type Article struct {
-	title               string
-	authors             string
-	scholarURL          string
-	year                int
-	month               int
-	day                 int
-	numCitations        int
-	articles            int // if there are more than one article within this publication (it will also tell how big the arrays below are)
-	description         string
-	pdfURL              string
-	journal             string
-	volume              string
-	pages               string
-	publisher           string
-	scholarCitedByURLs  []string
-	scholarVersionsURLs []string
-	scholarRelatedURLs  []string
-	lastRetrieved       time.Time
+	Title               string
+	Authors             string
+	ScholarURL          string
+	Year                int
+	Month               int
+	Day                 int
+	NumCitations        int
+	Articles            int // if there are more than one article within this publication (it will also tell how big the arrays below are)
+	Description         string
+	PdfURL              string
+	Journal             string
+	Volume              string
+	Pages               string
+	Publisher           string
+	ScholarCitedByURLs  []string
+	ScholarVersionsURLs []string
+	ScholarRelatedURLs  []string
+	LastRetrieved       time.Time
 }
 
 type Profile struct {
-	user          string
-	lastRetrieved time.Time
-	articles      []string // list of article URLs - we'd still need to look them up in the article map
+	User          string
+	LastRetrieved time.Time
+	Articles      []string // list of article URLs - we'd still need to look them up in the article map
 }
 
 type Scholar struct {
 	articles cmap.ConcurrentMap[string, Article] // map of articles by URL
-	profile  cmap.ConcurrentMap[string, Profile] // map of profile by user string
+	profile  cmap.ConcurrentMap[string, Profile] // map of profile by User string
 }
 
 func New() Scholar {
@@ -58,7 +58,7 @@ func New() Scholar {
 }
 
 func (a Article) String() string {
-	return "Article(\n  title=" + a.title + "\n  authors=" + a.authors + "\n  scholarURL=" + a.scholarURL + "\n  year=" + strconv.Itoa(a.year) + "\n  month=" + strconv.Itoa(a.month) + "\n  day=" + strconv.Itoa(a.day) + "\n  numCitations=" + strconv.Itoa(a.numCitations) + "\n  articles=" + strconv.Itoa(a.articles) + "\n  description=" + a.description + "\n  pdfURL=" + a.pdfURL + "\n  journal=" + a.journal + "\n  volume=" + a.volume + "\n  pages=" + a.pages + "\n  publisher=" + a.publisher + "\n  scholarCitedByURL=" + strings.Join(a.scholarCitedByURLs, ", ") + "\n  scholarVersionsURL=" + strings.Join(a.scholarVersionsURLs, ", ") + "\n  scholarRelatedURL=" + strings.Join(a.scholarRelatedURLs, ", ") + "\n  lastRetrieved=" + a.lastRetrieved.String() + "\n)"
+	return "Article(\n  Title=" + a.Title + "\n  authors=" + a.Authors + "\n  ScholarURL=" + a.ScholarURL + "\n  Year=" + strconv.Itoa(a.Year) + "\n  Month=" + strconv.Itoa(a.Month) + "\n  Day=" + strconv.Itoa(a.Day) + "\n  NumCitations=" + strconv.Itoa(a.NumCitations) + "\n  Articles=" + strconv.Itoa(a.Articles) + "\n  Description=" + a.Description + "\n  PdfURL=" + a.PdfURL + "\n  Journal=" + a.Journal + "\n  Volume=" + a.Volume + "\n  Pages=" + a.Pages + "\n  Publisher=" + a.Publisher + "\n  scholarCitedByURL=" + strings.Join(a.ScholarCitedByURLs, ", ") + "\n  scholarVersionsURL=" + strings.Join(a.ScholarVersionsURLs, ", ") + "\n  scholarRelatedURL=" + strings.Join(a.ScholarRelatedURLs, ", ") + "\n  LastRetrieved=" + a.LastRetrieved.String() + "\n)"
 }
 
 func (sch Scholar) QueryProfile(user string, limit int) []Article {
@@ -68,25 +68,25 @@ func (sch Scholar) QueryProfile(user string, limit int) []Article {
 func (sch Scholar) QueryProfileWithCache(user string, limit int) []Article {
 	if sch.profile.Has(user) {
 		p, _ := sch.profile.Get(user)
-		lastAccess := p.lastRetrieved
+		lastAccess := p.LastRetrieved
 		if (time.Now().Sub(lastAccess)).Seconds() > MAX_TIME_PROFILE.Seconds() {
-			println("Profile cache expired for user: " + user)
+			println("Profile cache expired for User: " + user)
 			sch.profile.Remove(user)
 			articles := sch.QueryProfileDumpResponse(user, true, limit, false)
 			var articleList []string
 			for _, article := range articles {
-				articleList = append(articleList, article.scholarURL)
+				articleList = append(articleList, article.ScholarURL)
 			}
-			sch.profile.Set(user, Profile{user: user, lastRetrieved: time.Now(), articles: articleList})
+			sch.profile.Set(user, Profile{User: user, LastRetrieved: time.Now(), Articles: articleList})
 		} else {
-			println("Profile cache hit for user: " + user)
-			// cache hit, return the articles
+			println("Profile cache hit for User: " + user)
+			// cache hit, return the Articles
 			articles := make([]Article, 0)
-			for _, articleURL := range p.articles {
+			for _, articleURL := range p.Articles {
 				if sch.articles.Has(articleURL) {
 					cacheArticle, _ := sch.articles.Get(articleURL)
-					if (time.Now().Sub(cacheArticle.lastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
-						println("Cache expired for article: " + articleURL + "\nLast Retrieved: " + cacheArticle.lastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.lastRetrieved).String())
+					if (time.Now().Sub(cacheArticle.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
+						println("Cache expired for article: " + articleURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
 						article := sch.QueryArticle(articleURL, Article{}, false)
 						sch.articles.Set(articleURL, article)
 						articles = append(articles, article)
@@ -106,13 +106,13 @@ func (sch Scholar) QueryProfileWithCache(user string, limit int) []Article {
 		}
 
 	} else {
-		println("Profile cache miss for user: " + user)
+		println("Profile cache miss for User: " + user)
 		articles := sch.QueryProfileDumpResponse(user, true, limit, false)
 		var articleList []string
 		for _, article := range articles {
-			articleList = append(articleList, article.scholarURL)
+			articleList = append(articleList, article.ScholarURL)
 		}
-		sch.profile.Set(user, Profile{user: user, lastRetrieved: time.Now(), articles: articleList})
+		sch.profile.Set(user, Profile{User: user, LastRetrieved: time.Now(), Articles: articleList})
 		return articles
 	}
 
@@ -120,8 +120,8 @@ func (sch Scholar) QueryProfileWithCache(user string, limit int) []Article {
 	return []Article{}
 }
 
-// QueryProfileDumpResponse queries the profile of a user and returns a list of articles
-// if queryArticles is true, it will also query the articles for extra information which isn't present on the profile page
+// QueryProfileDumpResponse queries the profile of a User and returns a list of Articles
+// if queryArticles is true, it will also query the Articles for extra information which isn't present on the profile page
 //
 //	we may wish to set this to false if we are only interested in some article info, or we have a cache hit and we just
 //	want to get updated information from the profile page only to save requests
@@ -132,7 +132,7 @@ func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, lim
 	client := &http.Client{}
 
 	// todo: make page size configurable, also support getting more than one page of citations
-	req, err := http.NewRequest("GET", BaseURL+"/citations?user="+user+"&cstart=0&pagesize="+strconv.Itoa(limit), nil)
+	req, err := http.NewRequest("GET", BaseURL+"/citations?User="+user+"&cstart=0&pagesize="+strconv.Itoa(limit), nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -164,18 +164,18 @@ func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, lim
 		var article Article
 		entry := s.Find(".gsc_a_t")
 		link := entry.Find(".gsc_a_at")
-		article.title = link.Text()
+		article.Title = link.Text()
 
 		tempURL, _ := link.Attr("href")
-		article.year, _ = strconv.Atoi(s.Find(".gsc_a_y").Find("span").Text())
-		article.numCitations, _ = strconv.Atoi(s.Find(".gsc_a_c").Children().First().Text())
+		article.Year, _ = strconv.Atoi(s.Find(".gsc_a_y").Find("span").Text())
+		article.NumCitations, _ = strconv.Atoi(s.Find(".gsc_a_c").Children().First().Text())
 
 		if queryArticles {
 			if sch.articles.Has(BaseURL + tempURL) {
 				// hit the cache
 				cacheArticle, _ := sch.articles.Get(BaseURL + tempURL)
-				if (time.Now().Sub(article.lastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
-					println("Cache expired for article" + BaseURL + tempURL + "\nLast Retrieved: " + cacheArticle.lastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.lastRetrieved).String())
+				if (time.Now().Sub(article.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
+					println("Cache expired for article" + BaseURL + tempURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
 					// expired cache entry, replace it
 					sch.articles.Remove(BaseURL + tempURL)
 					article = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
@@ -183,7 +183,7 @@ func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, lim
 				} else {
 					println("Cache hit for article" + BaseURL + tempURL)
 					// not expired, update any new information
-					cacheArticle.numCitations = article.numCitations // update the citations since thats all that might change
+					cacheArticle.NumCitations = article.NumCitations // update the citations since thats all that might change
 					article = cacheArticle
 					sch.articles.Set(BaseURL+tempURL, article)
 				}
@@ -201,7 +201,7 @@ func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, lim
 
 func (sch Scholar) QueryArticle(url string, article Article, dumpResponse bool) Article {
 	fmt.Println("PULLING ARTICLE: " + url)
-	article.scholarURL = url
+	article.ScholarURL = url
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -230,63 +230,63 @@ func (sch Scholar) QueryArticle(url string, article Article, dumpResponse bool) 
 	if err != nil {
 		log.Fatal(err)
 	}
-	article.lastRetrieved = time.Now()
-	article.articles = 0
-	article.pdfURL, _ = doc.Find(".gsc_oci_title_ggi").Children().First().Attr("href") // assume the link is the first child
+	article.LastRetrieved = time.Now()
+	article.Articles = 0
+	article.PdfURL, _ = doc.Find(".gsc_oci_title_ggi").Children().First().Attr("href") // assume the link is the first child
 	doc.Find(".gs_scl").Each(func(i int, s *goquery.Selection) {
 		text := s.Find(".gsc_oci_field").Text()
 		if text == "Authors" {
-			article.authors = s.Find(".gsc_oci_value").Text()
+			article.Authors = s.Find(".gsc_oci_value").Text()
 		}
 		if text == "Publication date" {
 			datestring := s.Find(".gsc_oci_value").Text()
 			parts := strings.Split(datestring, "/")
 			if len(parts) == 3 {
-				article.year, _ = strconv.Atoi(parts[0])
-				article.month, _ = strconv.Atoi(parts[1])
-				article.day, _ = strconv.Atoi(parts[2])
+				article.Year, _ = strconv.Atoi(parts[0])
+				article.Month, _ = strconv.Atoi(parts[1])
+				article.Day, _ = strconv.Atoi(parts[2])
 			}
 		}
 		if text == "Journal" {
-			article.journal = s.Find(".gsc_oci_value").Text()
+			article.Journal = s.Find(".gsc_oci_value").Text()
 		}
 		if text == "Volume" {
-			article.volume = s.Find(".gsc_oci_value").Text()
+			article.Volume = s.Find(".gsc_oci_value").Text()
 		}
 		if text == "Pages" {
-			article.pages = s.Find(".gsc_oci_value").Text()
+			article.Pages = s.Find(".gsc_oci_value").Text()
 		}
 		if text == "Publisher" {
-			article.publisher = s.Find(".gsc_oci_value").Text()
+			article.Publisher = s.Find(".gsc_oci_value").Text()
 		}
 		if text == "Description" {
-			article.description = s.Find(".gsc_oci_value").Text()
+			article.Description = s.Find(".gsc_oci_value").Text()
 		}
 		// don't need to parse here, already have it
 		//if text == "Total citations" {
 		//	citationString := s.Find(".gsc_oci_value").Text()
 		//	parts := strings.Split(citationString, "Cited by ")
 		//	if len(parts) == 2 {
-		//		article.numCitations, _ = strconv.Atoi(parts[1])
+		//		article.NumCitations, _ = strconv.Atoi(parts[1])
 		//	}
 		//}
-		if text == "Scholar articles" {
-			article.articles += 1
+		if text == "Scholar Articles" {
+			article.Articles += 1
 			articles := s.Find(".gsc_oci_value")
 			articles.Find(".gsc_oci_merged_snippet").Each(func(i int, s *goquery.Selection) {
 				// each one of these is an article. For an scholar-example with multiple see: https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ECQMeb0AAAAJ&citation_for_view=ECQMeb0AAAAJ:u5HHmVD_uO8C
-				// this seems to happen if the entry is a book and there are articles within it
+				// this seems to happen if the entry is a book and there are Articles within it
 				s.Find(".gsc_oms_link").Each(func(i int, l *goquery.Selection) {
 					linkText := l.Text()
 					linkUrl, _ := l.Attr("href")
 					if strings.Contains(linkText, "Cited by") {
-						article.scholarCitedByURLs = append(article.scholarCitedByURLs, linkUrl)
+						article.ScholarCitedByURLs = append(article.ScholarCitedByURLs, linkUrl)
 					}
-					if strings.Contains(linkText, "Related articles") {
-						article.scholarRelatedURLs = append(article.scholarRelatedURLs, linkUrl)
+					if strings.Contains(linkText, "Related Articles") {
+						article.ScholarRelatedURLs = append(article.ScholarRelatedURLs, linkUrl)
 					}
 					if strings.Contains(linkText, "versions") {
-						article.scholarVersionsURLs = append(article.scholarVersionsURLs, linkUrl)
+						article.ScholarVersionsURLs = append(article.ScholarVersionsURLs, linkUrl)
 					}
 				})
 			})
