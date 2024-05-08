@@ -132,7 +132,7 @@ func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, lim
 	client := &http.Client{}
 
 	// todo: make page size configurable, also support getting more than one page of citations
-	req, err := http.NewRequest("GET", BaseURL+"/citations?User="+user+"&cstart=0&pagesize="+strconv.Itoa(limit), nil)
+	req, err := http.NewRequest("GET", BaseURL+"/citations?user="+user+"&cstart=0&pagesize="+strconv.Itoa(limit), nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
