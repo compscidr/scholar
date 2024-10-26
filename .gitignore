@@ -17,3 +17,5 @@ go-scholar
 
 .idea
 scholar-example/scholar-example
+articles.json
+profiles.json

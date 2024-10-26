@@ -15,7 +15,7 @@ func TestScholarQuerier(t *testing.T) {
 }
 
 func TestProfileQuerier(t *testing.T) {
-	sch := New("cache.json")
+	sch := New("profiles.json", "articles.json")
 	articles := sch.QueryProfile("SbUmSEAAAAAJ", 1)
 	assert.NotEmpty(t, articles)
 
