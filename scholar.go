@@ -2,14 +2,16 @@ package go_scholar
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
-	cmap "github.com/orcaman/concurrent-map/v2"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -46,14 +48,106 @@ type Profile struct {
 }
 
 type Scholar struct {
-	articles cmap.ConcurrentMap[string, Article] // map of articles by URL
-	profile  cmap.ConcurrentMap[string, Profile] // map of profile by User string
+	articles sync.Map // map of articles by URL
+	profile  sync.Map // map of profile by User string
 }
 
-func New() Scholar {
-	return Scholar{
-		articles: cmap.New[Article](),
-		profile:  cmap.New[Profile](),
+func New(profileCache string, articleCache string) *Scholar {
+
+	profileFile, err := os.Open(profileCache)
+	if err != nil {
+		println("Error opening profile cache file: " + profileCache + " - creating new cache")
+		return &Scholar{}
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("Error closing profile cache file: " + profileCache)
+		}
+	}(profileFile)
+	profileDecoder := json.NewDecoder(profileFile)
+	var regularProfileMap map[string]Profile
+	err = profileDecoder.Decode(&regularProfileMap)
+	if err != nil {
+		println("Error decoding profile file: " + profileCache + " - creating new cache")
+		return &Scholar{}
+	}
+
+	articleFile, err := os.Open(articleCache)
+	if err != nil {
+		println("Error opening article cache file: " + articleCache + " - creating new cache")
+		return &Scholar{}
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("Error closing article cache file: " + articleCache)
+		}
+	}(articleFile)
+	articleDecoder := json.NewDecoder(articleFile)
+	var regularArticleMap map[string]Article
+	err = articleDecoder.Decode(&regularArticleMap)
+	if err != nil {
+		println("Error decoding article cache file: " + articleCache + " - creating new cache")
+		return &Scholar{}
+	}
+
+	sch := Scholar{}
+
+	// convert the regular maps to sync maps
+	for key, value := range regularProfileMap {
+		sch.profile.Store(key, value)
+	}
+	for key, value := range regularArticleMap {
+		sch.articles.Store(key, value)
+	}
+
+	return &sch
+}
+
+func (sch *Scholar) SaveCache(profileCache string, articleCache string) {
+	profileFile, err := os.Create(profileCache)
+	if err != nil {
+		println("Error opening profile cache file: " + profileCache)
+		return
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("Error closing profile cache file: " + profileCache)
+		}
+	}(profileFile)
+	profileEncoder := json.NewEncoder(profileFile)
+	regularProfileMap := make(map[string]interface{})
+	sch.profile.Range(func(key, value interface{}) bool {
+		regularProfileMap[key.(string)] = value
+		return true
+	})
+	err = profileEncoder.Encode(regularProfileMap)
+	if err != nil {
+		println("Error encoding profile cache file: " + profileCache)
+	}
+
+	articleFile, err := os.Create(articleCache)
+	if err != nil {
+		println("Error opening article cache file: " + articleCache)
+		return
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			println("Error closing profile cache file: " + articleCache)
+		}
+	}(articleFile)
+	articleEncoder := json.NewEncoder(articleFile)
+	regularArticleMap := make(map[string]interface{})
+	sch.articles.Range(func(key, value interface{}) bool {
+		regularArticleMap[key.(string)] = value
+		return true
+	})
+	err = articleEncoder.Encode(regularArticleMap)
+	if err != nil {
+		println("Error encoding cache file: " + articleCache)
 	}
 }
 
@@ -61,34 +155,38 @@ func (a Article) String() string {
 	return "Article(\n  Title=" + a.Title + "\n  authors=" + a.Authors + "\n  ScholarURL=" + a.ScholarURL + "\n  Year=" + strconv.Itoa(a.Year) + "\n  Month=" + strconv.Itoa(a.Month) + "\n  Day=" + strconv.Itoa(a.Day) + "\n  NumCitations=" + strconv.Itoa(a.NumCitations) + "\n  Articles=" + strconv.Itoa(a.Articles) + "\n  Description=" + a.Description + "\n  PdfURL=" + a.PdfURL + "\n  Journal=" + a.Journal + "\n  Volume=" + a.Volume + "\n  Pages=" + a.Pages + "\n  Publisher=" + a.Publisher + "\n  scholarCitedByURL=" + strings.Join(a.ScholarCitedByURLs, ", ") + "\n  scholarVersionsURL=" + strings.Join(a.ScholarVersionsURLs, ", ") + "\n  scholarRelatedURL=" + strings.Join(a.ScholarRelatedURLs, ", ") + "\n  LastRetrieved=" + a.LastRetrieved.String() + "\n)"
 }
 
-func (sch Scholar) QueryProfile(user string, limit int) []Article {
+func (sch *Scholar) QueryProfile(user string, limit int) []Article {
 	return sch.QueryProfileDumpResponse(user, true, limit, false)
 }
 
-func (sch Scholar) QueryProfileWithCache(user string, limit int) []Article {
-	if sch.profile.Has(user) {
-		p, _ := sch.profile.Get(user)
-		lastAccess := p.LastRetrieved
+func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) []Article {
+
+	profileResult, profileOk := sch.profile.Load(user)
+	if profileOk {
+		profile := profileResult.(Profile)
+		lastAccess := profile.LastRetrieved
 		if (time.Now().Sub(lastAccess)).Seconds() > MAX_TIME_PROFILE.Seconds() {
 			println("Profile cache expired for User: " + user)
-			sch.profile.Remove(user)
+			sch.profile.Delete(user)
 			articles := sch.QueryProfileDumpResponse(user, true, limit, false)
 			var articleList []string
 			for _, article := range articles {
 				articleList = append(articleList, article.ScholarURL)
 			}
-			sch.profile.Set(user, Profile{User: user, LastRetrieved: time.Now(), Articles: articleList})
+			newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
+			sch.profile.Store(user, newProfile)
 		} else {
 			println("Profile cache hit for User: " + user)
 			// cache hit, return the Articles
 			articles := make([]Article, 0)
-			for _, articleURL := range p.Articles {
-				if sch.articles.Has(articleURL) {
-					cacheArticle, _ := sch.articles.Get(articleURL)
+			for _, articleURL := range profile.Articles {
+				articleResult, articleOk := sch.articles.Load(articleURL)
+				if articleOk {
+					cacheArticle := articleResult.(Article)
 					if (time.Now().Sub(cacheArticle.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
 						println("Cache expired for article: " + articleURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
 						article := sch.QueryArticle(articleURL, Article{}, false)
-						sch.articles.Set(articleURL, article)
+						sch.articles.Store(articleURL, article)
 						articles = append(articles, article)
 					} else {
 						println("Cache hit for article: " + articleURL)
@@ -99,7 +197,7 @@ func (sch Scholar) QueryProfileWithCache(user string, limit int) []Article {
 					println("Cache miss for article: " + articleURL)
 					article := sch.QueryArticle(articleURL, Article{}, false)
 					articles = append(articles, article)
-					sch.articles.Set(articleURL, article)
+					sch.articles.Store(articleURL, article)
 				}
 			}
 			return articles
@@ -112,7 +210,8 @@ func (sch Scholar) QueryProfileWithCache(user string, limit int) []Article {
 		for _, article := range articles {
 			articleList = append(articleList, article.ScholarURL)
 		}
-		sch.profile.Set(user, Profile{User: user, LastRetrieved: time.Now(), Articles: articleList})
+		newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
+		sch.profile.Store(user, newProfile)
 		return articles
 	}
 
@@ -127,7 +226,7 @@ func (sch Scholar) QueryProfileWithCache(user string, limit int) []Article {
 //	want to get updated information from the profile page only to save requests
 //
 // if dumpResponse is true, it will print the response to stdout (useful for debugging)
-func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) []Article {
+func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) []Article {
 	var articles []Article
 	client := &http.Client{}
 
@@ -171,26 +270,27 @@ func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, lim
 		article.NumCitations, _ = strconv.Atoi(s.Find(".gsc_a_c").Children().First().Text())
 
 		if queryArticles {
-			if sch.articles.Has(BaseURL + tempURL) {
+			articleResult, articleOk := sch.articles.Load(BaseURL + tempURL)
+			if articleOk {
 				// hit the cache
-				cacheArticle, _ := sch.articles.Get(BaseURL + tempURL)
+				cacheArticle := articleResult.(Article)
 				if (time.Now().Sub(article.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
 					println("Cache expired for article" + BaseURL + tempURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
 					// expired cache entry, replace it
-					sch.articles.Remove(BaseURL + tempURL)
+					sch.articles.Delete(BaseURL + tempURL)
 					article = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
-					sch.articles.Set(BaseURL+tempURL, article)
+					sch.articles.Store(BaseURL+tempURL, article)
 				} else {
 					println("Cache hit for article" + BaseURL + tempURL)
 					// not expired, update any new information
 					cacheArticle.NumCitations = article.NumCitations // update the citations since thats all that might change
 					article = cacheArticle
-					sch.articles.Set(BaseURL+tempURL, article)
+					sch.articles.Store(BaseURL+tempURL, article)
 				}
 			} else {
 				println("Cache miss for article" + BaseURL + tempURL)
 				article = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
-				sch.articles.Set(BaseURL+tempURL, article)
+				sch.articles.Store(BaseURL+tempURL, article)
 			}
 		}
 		articles = append(articles, article)
@@ -199,7 +299,7 @@ func (sch Scholar) QueryProfileDumpResponse(user string, queryArticles bool, lim
 	return articles
 }
 
-func (sch Scholar) QueryArticle(url string, article Article, dumpResponse bool) Article {
+func (sch *Scholar) QueryArticle(url string, article Article, dumpResponse bool) Article {
 	fmt.Println("PULLING ARTICLE: " + url)
 	article.ScholarURL = url
 	client := &http.Client{}
@@ -274,7 +374,8 @@ func (sch Scholar) QueryArticle(url string, article Article, dumpResponse bool) 
 			article.Articles += 1
 			articles := s.Find(".gsc_oci_value")
 			articles.Find(".gsc_oci_merged_snippet").Each(func(i int, s *goquery.Selection) {
-				// each one of these is an article. For an scholar-example with multiple see: https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ECQMeb0AAAAJ&citation_for_view=ECQMeb0AAAAJ:u5HHmVD_uO8C
+				// each one of these is an article. For a scholar-example with multiple see:
+				// https://scholar.google.com/citations?view_op=view_citation&hl=en&user=ECQMeb0AAAAJ&citation_for_view=ECQMeb0AAAAJ:u5HHmVD_uO8C
 				// this seems to happen if the entry is a book and there are Articles within it
 				s.Find(".gsc_oms_link").Each(func(i int, l *goquery.Selection) {
 					linkText := l.Text()
