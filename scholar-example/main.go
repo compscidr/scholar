@@ -23,10 +23,10 @@ func main() {
 	user := *userPtr
 	limit := *limitPtr
 
-	sch := scholar.New()
+	sch := scholar.New("profile.json", "articles.json")
 	//articles := sch.QueryProfileDumpResponse(user, limit, true)
 	//articles := sch.QueryProfile(user, limit)
-	articles := sch.QueryProfileWithCache(user, limit)
+	articles := sch.QueryProfileWithMemoryCache(user, limit)
 
 	if len(articles) == 0 {
 		fmt.Println("Not found")
@@ -37,13 +37,25 @@ func main() {
 		fmt.Println(article)
 	}
 
-	cachedArticles := sch.QueryProfileWithCache(user, limit)
+	cachedArticles := sch.QueryProfileWithMemoryCache(user, limit)
 	if len(articles) == 0 {
 		fmt.Println("Not found")
 		return
 	}
 
 	for _, article := range cachedArticles {
+		fmt.Println(article)
+	}
+
+	sch.SaveCache("profile.json", "articles.json")
+	sch2 := scholar.New("profile.json", "articles.json")
+	cachedArticles2 := sch2.QueryProfileWithMemoryCache(user, limit)
+	if len(articles) == 0 {
+		fmt.Println("Not found")
+		return
+	}
+
+	for _, article := range cachedArticles2 {
 		fmt.Println(article)
 	}
 }
