@@ -7,7 +7,7 @@ toolchain go1.23.3
 require (
 	github.com/PuerkitoBio/goquery v1.10.0
 	github.com/orcaman/concurrent-map/v2 v2.0.1
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 )
 
 require (
