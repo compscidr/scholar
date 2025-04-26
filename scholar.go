@@ -3,6 +3,7 @@ package go_scholar
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io"
@@ -85,7 +86,7 @@ func New(profileCache string, articleCache string) *Scholar {
 		}
 	}(articleFile)
 	articleDecoder := json.NewDecoder(articleFile)
-	var regularArticleMap map[string]Article
+	var regularArticleMap map[string]*Article
 	err = articleDecoder.Decode(&regularArticleMap)
 	if err != nil {
 		println("Error decoding article cache file: " + articleCache + " - creating new cache")
@@ -155,11 +156,11 @@ func (a Article) String() string {
 	return "Article(\n  Title=" + a.Title + "\n  authors=" + a.Authors + "\n  ScholarURL=" + a.ScholarURL + "\n  Year=" + strconv.Itoa(a.Year) + "\n  Month=" + strconv.Itoa(a.Month) + "\n  Day=" + strconv.Itoa(a.Day) + "\n  NumCitations=" + strconv.Itoa(a.NumCitations) + "\n  Articles=" + strconv.Itoa(a.Articles) + "\n  Description=" + a.Description + "\n  PdfURL=" + a.PdfURL + "\n  Journal=" + a.Journal + "\n  Volume=" + a.Volume + "\n  Pages=" + a.Pages + "\n  Publisher=" + a.Publisher + "\n  scholarCitedByURL=" + strings.Join(a.ScholarCitedByURLs, ", ") + "\n  scholarVersionsURL=" + strings.Join(a.ScholarVersionsURLs, ", ") + "\n  scholarRelatedURL=" + strings.Join(a.ScholarRelatedURLs, ", ") + "\n  LastRetrieved=" + a.LastRetrieved.String() + "\n)"
 }
 
-func (sch *Scholar) QueryProfile(user string, limit int) []Article {
+func (sch *Scholar) QueryProfile(user string, limit int) ([]*Article, error) {
 	return sch.QueryProfileDumpResponse(user, true, limit, false)
 }
 
-func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) []Article {
+func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Article, error) {
 
 	profileResult, profileOk := sch.profile.Load(user)
 	if profileOk {
@@ -167,27 +168,33 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) []Articl
 		lastAccess := profile.LastRetrieved
 		if (time.Now().Sub(lastAccess)).Seconds() > MAX_TIME_PROFILE.Seconds() {
 			println("Profile cache expired for User: " + user)
-			sch.profile.Delete(user)
-			articles := sch.QueryProfileDumpResponse(user, true, limit, false)
-			var articleList []string
-			for _, article := range articles {
-				articleList = append(articleList, article.ScholarURL)
+			articles, err := sch.QueryProfileDumpResponse(user, true, limit, false)
+			if err == nil {
+				var articleList []string
+				for _, article := range articles {
+					articleList = append(articleList, article.ScholarURL)
+				}
+				newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
+				sch.profile.Delete(user)
+				sch.profile.Store(user, newProfile)
+			} else {
+				return nil, err
 			}
-			newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
-			sch.profile.Store(user, newProfile)
 		} else {
 			println("Profile cache hit for User: " + user)
 			// cache hit, return the Articles
-			articles := make([]Article, 0)
+			articles := make([]*Article, 0)
 			for _, articleURL := range profile.Articles {
 				articleResult, articleOk := sch.articles.Load(articleURL)
 				if articleOk {
-					cacheArticle := articleResult.(Article)
+					cacheArticle := articleResult.(*Article)
 					if (time.Now().Sub(cacheArticle.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
 						println("Cache expired for article: " + articleURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
-						article := sch.QueryArticle(articleURL, Article{}, false)
-						sch.articles.Store(articleURL, article)
-						articles = append(articles, article)
+						article, err := sch.QueryArticle(articleURL, &Article{}, false)
+						if err == nil {
+							sch.articles.Store(articleURL, article)
+							articles = append(articles, article)
+						}
 					} else {
 						println("Cache hit for article: " + articleURL)
 						articles = append(articles, cacheArticle)
@@ -195,28 +202,31 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) []Articl
 				} else {
 					// cache miss, query the article
 					println("Cache miss for article: " + articleURL)
-					article := sch.QueryArticle(articleURL, Article{}, false)
-					articles = append(articles, article)
-					sch.articles.Store(articleURL, article)
+					article, err := sch.QueryArticle(articleURL, &Article{}, false)
+					if err == nil {
+						articles = append(articles, article)
+						sch.articles.Store(articleURL, article)
+					}
 				}
 			}
-			return articles
+			return articles, nil
 		}
-
 	} else {
 		println("Profile cache miss for User: " + user)
-		articles := sch.QueryProfileDumpResponse(user, true, limit, false)
-		var articleList []string
-		for _, article := range articles {
-			articleList = append(articleList, article.ScholarURL)
+		articles, err := sch.QueryProfileDumpResponse(user, true, limit, false)
+		if err == nil {
+			var articleList []string
+			for _, article := range articles {
+				articleList = append(articleList, article.ScholarURL)
+			}
+			newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
+			sch.profile.Store(user, newProfile)
+			return articles, nil
+		} else {
+			return nil, err
 		}
-		newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
-		sch.profile.Store(user, newProfile)
-		return articles
 	}
-
-	println("Shouldn't have got here")
-	return []Article{}
+	return nil, errors.New("Shouldn't have got here")
 }
 
 // QueryProfileDumpResponse queries the profile of a User and returns a list of Articles
@@ -226,8 +236,8 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) []Articl
 //	want to get updated information from the profile page only to save requests
 //
 // if dumpResponse is true, it will print the response to stdout (useful for debugging)
-func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) []Article {
-	var articles []Article
+func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) ([]*Article, error) {
+	var articles []*Article
 	client := &http.Client{}
 
 	// todo: make page size configurable, also support getting more than one page of citations
@@ -242,13 +252,14 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", resp.StatusCode, resp.Status)
+		errorString := fmt.Sprintf("Scholar: HTTP Status Code: %d", resp.StatusCode)
+		return nil, errors.New(errorString)
 	}
 
 	if dumpResponse {
 		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		req.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 		println("GOT AUTHOR PAGE: \n", string(bodyBytes))
@@ -260,7 +271,7 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 	}
 
 	doc.Find(".gsc_a_tr").Each(func(i int, s *goquery.Selection) {
-		var article Article
+		var article *Article
 		entry := s.Find(".gsc_a_t")
 		link := entry.Find(".gsc_a_at")
 		article.Title = link.Text()
@@ -273,13 +284,16 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 			articleResult, articleOk := sch.articles.Load(BaseURL + tempURL)
 			if articleOk {
 				// hit the cache
-				cacheArticle := articleResult.(Article)
+				cacheArticle := articleResult.(*Article)
 				if (time.Now().Sub(article.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
 					println("Cache expired for article" + BaseURL + tempURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
 					// expired cache entry, replace it
-					sch.articles.Delete(BaseURL + tempURL)
-					article = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
-					sch.articles.Store(BaseURL+tempURL, article)
+					article, err = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
+					if err == nil {
+						// only delete and store if we were successful
+						sch.articles.Delete(BaseURL + tempURL)
+						sch.articles.Store(BaseURL+tempURL, article)
+					}
 				} else {
 					println("Cache hit for article" + BaseURL + tempURL)
 					// not expired, update any new information
@@ -289,38 +303,41 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 				}
 			} else {
 				println("Cache miss for article" + BaseURL + tempURL)
-				article = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
-				sch.articles.Store(BaseURL+tempURL, article)
+				article, err = sch.QueryArticle(BaseURL+tempURL, article, dumpResponse)
+				if err == nil {
+					sch.articles.Store(BaseURL+tempURL, article)
+				}
 			}
 		}
 		articles = append(articles, article)
 	})
 
-	return articles
+	return articles, nil
 }
 
-func (sch *Scholar) QueryArticle(url string, article Article, dumpResponse bool) Article {
+func (sch *Scholar) QueryArticle(url string, article *Article, dumpResponse bool) (*Article, error) {
 	fmt.Println("PULLING ARTICLE: " + url)
 	article.ScholarURL = url
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 	req.Header.Set("User-Agent", AGENT)
 	resp, err := client.Do(req)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		log.Fatalf("status code error: %d %s", resp.StatusCode, resp.Status)
+		errorString := fmt.Sprintf("Scholar: HTTP Status Code: %d", resp.StatusCode)
+		return nil, errors.New(errorString)
 	}
 
 	if dumpResponse {
 		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 		req.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 		println("GOT ARTICLE: \n", string(bodyBytes))
@@ -328,7 +345,7 @@ func (sch *Scholar) QueryArticle(url string, article Article, dumpResponse bool)
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	article.LastRetrieved = time.Now()
 	article.Articles = 0
@@ -393,5 +410,5 @@ func (sch *Scholar) QueryArticle(url string, article Article, dumpResponse bool)
 			})
 		}
 	})
-	return article
+	return article, nil
 }

@@ -16,7 +16,8 @@ func TestScholarQuerier(t *testing.T) {
 
 func TestProfileQuerier(t *testing.T) {
 	sch := New("profiles.json", "articles.json")
-	articles := sch.QueryProfile("SbUmSEAAAAAJ", 1)
+	articles, err := sch.QueryProfile("SbUmSEAAAAAJ", 1)
+	assert.Nil(t, err)
 	assert.NotEmpty(t, articles)
 
 	for _, article := range articles {
