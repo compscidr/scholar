@@ -2,6 +2,7 @@ package go_scholar
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -238,7 +239,12 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 // if dumpResponse is true, it will print the response to stdout (useful for debugging)
 func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) ([]*Article, error) {
 	var articles []*Article
-	client := &http.Client{}
+	client := &http.Client{
+		// empty TLS config to fix 403 errors: https://www.reddit.com/r/redditdev/comments/uncu00/go_golang_clients_getting_403_blocked_responses/
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{},
+		},
+	}
 
 	// todo: make page size configurable, also support getting more than one page of citations
 	requestURL := BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=" + strconv.Itoa(limit)
