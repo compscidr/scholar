@@ -13,7 +13,7 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
     - name: Dummy check with curl
-      run: curl https://scholar.google.com/citations?user=SbUmSEAAAAAJ&cstart=0&pagesize=1
+      run: curl -v https://scholar.google.com/citations?user=SbUmSEAAAAAJ&cstart=0&pagesize=1
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Build and Run Scholar Tests
