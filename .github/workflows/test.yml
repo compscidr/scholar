@@ -4,7 +4,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go-version: [1.21.x]
+        go-version: [1.24.2]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
@@ -12,6 +12,8 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go-version }}
+    - name: Dummy check with curl
+      run: curl https://scholar.google.com/citations?user=SbUmSEAAAAAJ&cstart=0&pagesize=1
     - name: Checkout code
       uses: actions/checkout@v4
     - name: Build and Run Scholar Tests
