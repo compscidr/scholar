@@ -241,7 +241,8 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 	client := &http.Client{}
 
 	// todo: make page size configurable, also support getting more than one page of citations
-	req, err := http.NewRequest("GET", BaseURL+"/citations?user="+user+"&cstart=0&pagesize="+strconv.Itoa(limit), nil)
+	requestURL := BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=" + strconv.Itoa(limit)
+	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -252,7 +253,7 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		errorString := fmt.Sprintf("Scholar: HTTP Status Code: %d %s", resp.StatusCode, resp.Body)
+		errorString := fmt.Sprintf("Scholar: HTTP Status Code from URL: %s %d %s", requestURL, resp.StatusCode, resp.Status)
 		return nil, errors.New(errorString)
 	}
 
