@@ -267,11 +267,11 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	doc.Find(".gsc_a_tr").Each(func(i int, s *goquery.Selection) {
-		var article *Article
+		article := &Article{}
 		entry := s.Find(".gsc_a_t")
 		link := entry.Find(".gsc_a_at")
 		article.Title = link.Text()
