@@ -250,7 +250,7 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 	requestURL := BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=" + strconv.Itoa(limit)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
-		log.Fatalln(err)
+		return nil, err
 	}
 	req.Header.Set("User-Agent", AGENT)
 	resp, err := client.Do(req)
@@ -259,7 +259,8 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		errorString := fmt.Sprintf("Scholar: HTTP Status Code from URL: %s %d %s", requestURL, resp.StatusCode, resp.Status)
+		rateLimitRemaining := resp.Header.Get("x-ratelimit-remaining")
+		errorString := fmt.Sprintf("Scholar: HTTP Status Code from URL: %s %d %s rate limit remaining?: %s", requestURL, resp.StatusCode, resp.Status, rateLimitRemaining)
 		return nil, errors.New(errorString)
 	}
 
