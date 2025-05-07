@@ -252,7 +252,7 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		errorString := fmt.Sprintf("Scholar: HTTP Status Code: %d", resp.StatusCode)
+		errorString := fmt.Sprintf("Scholar: HTTP Status Code: %d %s", resp.StatusCode, resp.Body)
 		return nil, errors.New(errorString)
 	}
 
