@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-const BaseURL = "http://scholar.google.com"
+const BaseURL = "https://scholar.google.com"
 const AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0"
 const MAX_TIME_PROFILE = time.Second * 3600 * 24     // 1 Day
 const MAX_TIME_ARTICLE = time.Second * 3600 * 24 * 7 // 1 week
