@@ -100,9 +100,11 @@ func New(profileCache string, articleCache string) *Scholar {
 	for key, value := range regularProfileMap {
 		sch.profile.Store(key, value)
 	}
+	fmt.Printf("Loaded cache into memory with %d profiles\n", len(regularProfileMap))
 	for key, value := range regularArticleMap {
 		sch.articles.Store(key, value)
 	}
+	fmt.Printf("Loaded cache into memory with %d articles\n", len(regularArticleMap))
 
 	return &sch
 }
@@ -150,6 +152,9 @@ func (sch *Scholar) SaveCache(profileCache string, articleCache string) {
 	err = articleEncoder.Encode(regularArticleMap)
 	if err != nil {
 		println("Error encoding cache file: " + articleCache)
+	}
+	if err == nil {
+		println("Saved cache")
 	}
 }
 
