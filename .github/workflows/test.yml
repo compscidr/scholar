@@ -23,3 +23,9 @@ jobs:
         cd scholar-example
         go build
         go test
+    - name: Run Integration Tests (with warnings only)
+      run: |
+        echo "Running integration tests against live Google Scholar API..."
+        echo "Note: These tests may fail due to rate limits or network issues - this is expected"
+        cd /home/runner/work/scholar/scholar
+        go test -tags integration -v || echo "⚠️  Integration tests failed (this is expected and does not break CI)"
