@@ -8,8 +8,6 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - name: Dummy check with curl
-      run: curl -A "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0" -v https://scholar.google.com/citations?user=SbUmSEAAAAAJ&cstart=0&pagesize=1
     - name: Install Go
       uses: actions/setup-go@v5
       with:

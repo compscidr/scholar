@@ -21,7 +21,6 @@ type MockRateLimitHTTPClient struct {
 }
 
 func (m *MockHTTPClient) Do(req *http.Request) (*http.Response, error) {
-	fmt.Printf("MOCK: Intercepted request to %s\n", req.URL.String())
 	url := req.URL.String()
 	
 	// Mock profile request - check if it's a profile query
