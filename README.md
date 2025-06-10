@@ -25,6 +25,28 @@ Working:
 * Configurable limit to number of articles to query in one go
 * On-disk caching of the profile and articles to avoid hitting the rate limit
 
+## Testing
+
+The module includes both mocked tests (fast, no network) and optional integration tests (against real Google Scholar API).
+
+### Running Tests
+
+```bash
+# Run all tests (uses mock HTTP client, no network requests)
+go test
+
+# Run specific test
+go test -run TestProfileQuerier
+
+# Run integration tests against real Google Scholar API (optional)
+go test -tags integration
+
+# Note: Integration tests may fail due to rate limits or network restrictions
+# This is expected and will not break CI/CD pipelines
+```
+
+The integration tests are designed to be optional - they test against the real Google Scholar API but gracefully handle network failures and rate limits. This allows developers to verify functionality against the live API when needed without breaking automated builds.
+
 ## TODO:
 * Pagination of articles
 * Add throttling to avoid hitting the rate limit (figure out what the limit is)

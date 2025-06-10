@@ -61,11 +61,19 @@ type Scholar struct {
 }
 
 func New(profileCache string, articleCache string) *Scholar {
+	// Initialize the base Scholar struct with default HTTP client
+	sch := Scholar{
+		httpClient: &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{},
+			},
+		},
+	}
 
 	profileFile, err := os.Open(profileCache)
 	if err != nil {
 		println("Error opening profile cache file: " + profileCache + " - creating new cache")
-		return &Scholar{}
+		return &sch
 	}
 	defer func(file *os.File) {
 		err := file.Close()
@@ -78,13 +86,13 @@ func New(profileCache string, articleCache string) *Scholar {
 	err = profileDecoder.Decode(&regularProfileMap)
 	if err != nil {
 		println("Error decoding profile file: " + profileCache + " - creating new cache")
-		return &Scholar{}
+		return &sch
 	}
 
 	articleFile, err := os.Open(articleCache)
 	if err != nil {
 		println("Error opening article cache file: " + articleCache + " - creating new cache")
-		return &Scholar{}
+		return &sch
 	}
 	defer func(file *os.File) {
 		err := file.Close()
@@ -97,15 +105,7 @@ func New(profileCache string, articleCache string) *Scholar {
 	err = articleDecoder.Decode(&regularArticleMap)
 	if err != nil {
 		println("Error decoding article cache file: " + articleCache + " - creating new cache")
-		return &Scholar{}
-	}
-
-	sch := Scholar{
-		httpClient: &http.Client{
-			Transport: &http.Transport{
-				TLSClientConfig: &tls.Config{},
-			},
-		},
+		return &sch
 	}
 
 	// convert the regular maps to sync maps
