@@ -17,6 +17,11 @@ import (
 	"time"
 )
 
+// HTTPClient interface to allow mocking of HTTP requests
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 const BaseURL = "https://scholar.google.com"
 const AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0"
 const MAX_TIME_PROFILE = time.Second * 3600 * 24     // 1 Day
@@ -50,8 +55,9 @@ type Profile struct {
 }
 
 type Scholar struct {
-	articles sync.Map // map of articles by URL
-	profile  sync.Map // map of profile by User string
+	articles   sync.Map // map of articles by URL
+	profile    sync.Map // map of profile by User string
+	httpClient HTTPClient // HTTP client for making requests
 }
 
 func New(profileCache string, articleCache string) *Scholar {
@@ -94,7 +100,13 @@ func New(profileCache string, articleCache string) *Scholar {
 		return &Scholar{}
 	}
 
-	sch := Scholar{}
+	sch := Scholar{
+		httpClient: &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{},
+			},
+		},
+	}
 
 	// convert the regular maps to sync maps
 	for key, value := range regularProfileMap {
@@ -107,6 +119,11 @@ func New(profileCache string, articleCache string) *Scholar {
 	fmt.Printf("Loaded cache into memory with %d articles\n", len(regularArticleMap))
 
 	return &sch
+}
+
+// SetHTTPClient allows setting a custom HTTP client (useful for testing)
+func (sch *Scholar) SetHTTPClient(client HTTPClient) {
+	sch.httpClient = client
 }
 
 func (sch *Scholar) SaveCache(profileCache string, articleCache string) {
@@ -244,12 +261,7 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 // if dumpResponse is true, it will print the response to stdout (useful for debugging)
 func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) ([]*Article, error) {
 	var articles []*Article
-	client := &http.Client{
-		// empty TLS config to fix 403 errors: https://www.reddit.com/r/redditdev/comments/uncu00/go_golang_clients_getting_403_blocked_responses/
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{},
-		},
-	}
+	client := sch.httpClient
 
 	// todo: make page size configurable, also support getting more than one page of citations
 	requestURL := BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=" + strconv.Itoa(limit)
@@ -331,7 +343,7 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 func (sch *Scholar) QueryArticle(url string, article *Article, dumpResponse bool) (*Article, error) {
 	fmt.Println("PULLING ARTICLE: " + url)
 	article.ScholarURL = url
-	client := &http.Client{}
+	client := sch.httpClient
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
