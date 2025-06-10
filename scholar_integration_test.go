@@ -83,12 +83,12 @@ func TestProfileQuerierIntegration(t *testing.T) {
 	// SbUmSEAAAAAJ appears to be a valid profile ID based on the test data
 	profileID := "SbUmSEAAAAAJ"
 	
-	// Limit to just 1 article to minimize requests
-	maxResults := 1
+	// Limit to 2 articles to test article handling while minimizing requests
+	maxResults := 2
 	
 	t.Logf("Testing integration with Google Scholar API (profileID: %s, maxResults: %d)", profileID, maxResults)
 	t.Logf("Using anti-blocking techniques: user agent rotation, realistic headers, delays")
-	t.Logf("Using minimal requests: profile page only (no detailed article queries)")
+	t.Logf("Testing both profile page and article handling code with %d articles", maxResults)
 	
 	// Set a reasonable timeout for the test
 	done := make(chan bool, 1)
@@ -96,9 +96,8 @@ func TestProfileQuerierIntegration(t *testing.T) {
 	var err error
 	
 	go func() {
-		// Use QueryProfileDumpResponse with queryArticles=false to minimize requests
-		// This fetches only the profile page without making additional requests for detailed article info
-		articles, err = sch.QueryProfileDumpResponse(profileID, false, maxResults, false)
+		// Use QueryProfile to test both profile page and detailed article handling code
+		articles, err = sch.QueryProfile(profileID, maxResults)
 		done <- true
 	}()
 	
