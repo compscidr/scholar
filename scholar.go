@@ -401,7 +401,6 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 }
 
 func (sch *Scholar) QueryArticle(url string, article *Article, dumpResponse bool) (*Article, error) {
-	fmt.Println("PULLING ARTICLE: " + url)
 	article.ScholarURL = url
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
