@@ -88,6 +88,7 @@ func TestProfileQuerierIntegration(t *testing.T) {
 	
 	t.Logf("Testing integration with Google Scholar API (profileID: %s, maxResults: %d)", profileID, maxResults)
 	t.Logf("Using anti-blocking techniques: user agent rotation, realistic headers, delays")
+	t.Logf("Using minimal requests: profile page only (no detailed article queries)")
 	
 	// Set a reasonable timeout for the test
 	done := make(chan bool, 1)
@@ -95,7 +96,9 @@ func TestProfileQuerierIntegration(t *testing.T) {
 	var err error
 	
 	go func() {
-		articles, err = sch.QueryProfile(profileID, maxResults)
+		// Use QueryProfileDumpResponse with queryArticles=false to minimize requests
+		// This fetches only the profile page without making additional requests for detailed article info
+		articles, err = sch.QueryProfileDumpResponse(profileID, false, maxResults, false)
 		done <- true
 	}()
 	
