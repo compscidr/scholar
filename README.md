@@ -9,6 +9,10 @@ This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
 import "github.com/compscidr/scholar"
 
 sch := scholar.New("profiles.json", "articles.json")
+
+// Optional: Configure request delay for throttling (default is 2 seconds)
+sch.SetRequestDelay(1 * time.Second)
+
 articles := sch.QueryProfile("SbUmSEAAAAAJ", 1)
 
 for _, article := range articles {
@@ -24,6 +28,8 @@ Working:
   * This is in memory, so if the program is restarted, the cache is lost
 * Configurable limit to number of articles to query in one go
 * On-disk caching of the profile and articles to avoid hitting the rate limit
+* **Rate limiting and throttling with configurable delays between requests**
+* **Automatic retry with exponential backoff for 429 (Too Many Requests) responses**
 
 ## Testing
 
@@ -49,7 +55,13 @@ The integration tests are designed to be optional - they test against the real G
 
 ## TODO:
 * Pagination of articles
-* Add throttling to avoid hitting the rate limit (figure out what the limit is)
+
+## Rate Limiting
+The library automatically throttles requests to avoid hitting Google Scholar's rate limits:
+* Default delay: 2 seconds between requests
+* Configurable via `SetRequestDelay(duration)`
+* Automatic retry with exponential backoff for 429 responses (up to 3 retries)
+* Backoff delays: 5s, 10s, 20s for subsequent retries
 
 ## Possible throttle info:
 https://stackoverflow.com/questions/60271587/how-long-is-the-error-429-toomanyrequests-cooldown

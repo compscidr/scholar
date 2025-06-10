@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -55,19 +54,27 @@ type Profile struct {
 }
 
 type Scholar struct {
-	articles   sync.Map // map of articles by URL
-	profile    sync.Map // map of profile by User string
-	httpClient HTTPClient // HTTP client for making requests
+	articles      sync.Map      // map of articles by URL
+	profile       sync.Map      // map of profile by User string
+	httpClient    HTTPClient    // HTTP client for making requests
+	rateLimiter   *time.Ticker  // rate limiter for throttling requests
+	requestDelay  time.Duration // delay between requests
+	lastRequest   time.Time     // timestamp of last request
+	requestMutex  sync.Mutex    // mutex to synchronize requests
 }
 
 func New(profileCache string, articleCache string) *Scholar {
-	// Initialize the base Scholar struct with default HTTP client
+	// Initialize the base Scholar struct with default HTTP client and rate limiter
+	// Default to 2 seconds between requests to be conservative with Google Scholar's rate limits
+	requestDelay := 2 * time.Second
 	sch := Scholar{
-		httpClient: &http.Client{
+		httpClient:   &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{},
 			},
 		},
+		requestDelay: requestDelay,
+		lastRequest:  time.Time{}, // zero time initially
 	}
 
 	profileFile, err := os.Open(profileCache)
@@ -124,6 +131,58 @@ func New(profileCache string, articleCache string) *Scholar {
 // SetHTTPClient allows setting a custom HTTP client (useful for testing)
 func (sch *Scholar) SetHTTPClient(client HTTPClient) {
 	sch.httpClient = client
+}
+
+// SetRequestDelay allows setting a custom delay between requests for throttling
+func (sch *Scholar) SetRequestDelay(delay time.Duration) {
+	sch.requestDelay = delay
+}
+
+// makeThrottledRequest makes an HTTP request with rate limiting and retry logic for 429 errors
+func (sch *Scholar) makeThrottledRequest(req *http.Request) (*http.Response, error) {
+	const maxRetries = 3
+	const baseBackoffDelay = 5 * time.Second
+	
+	for attempt := 0; attempt <= maxRetries; attempt++ {
+		// Apply rate limiting
+		sch.requestMutex.Lock()
+		if !sch.lastRequest.IsZero() {
+			elapsed := time.Since(sch.lastRequest)
+			if elapsed < sch.requestDelay {
+				sleepTime := sch.requestDelay - elapsed
+				sch.requestMutex.Unlock()
+				time.Sleep(sleepTime)
+				sch.requestMutex.Lock()
+			}
+		}
+		sch.lastRequest = time.Now()
+		sch.requestMutex.Unlock()
+		
+		// Make the request
+		resp, err := sch.httpClient.Do(req)
+		if err != nil {
+			return nil, err
+		}
+		
+		// If not a rate limit error, return the response
+		if resp.StatusCode != 429 {
+			return resp, nil
+		}
+		
+		// Handle 429 (Too Many Requests) with exponential backoff
+		resp.Body.Close() // Close the response body before retrying
+		
+		if attempt == maxRetries {
+			return nil, fmt.Errorf("max retries (%d) exceeded due to rate limiting (HTTP 429)", maxRetries)
+		}
+		
+		// Exponential backoff: baseDelay * 2^attempt
+		backoffDelay := baseBackoffDelay * time.Duration(1<<uint(attempt))
+		fmt.Printf("Rate limited (429), retrying in %v (attempt %d/%d)\n", backoffDelay, attempt+1, maxRetries)
+		time.Sleep(backoffDelay)
+	}
+	
+	return nil, fmt.Errorf("unexpected error in retry logic")
 }
 
 func (sch *Scholar) SaveCache(profileCache string, articleCache string) {
@@ -261,7 +320,6 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 // if dumpResponse is true, it will print the response to stdout (useful for debugging)
 func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) ([]*Article, error) {
 	var articles []*Article
-	client := sch.httpClient
 
 	// todo: make page size configurable, also support getting more than one page of citations
 	requestURL := BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=" + strconv.Itoa(limit)
@@ -270,11 +328,13 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 		return nil, err
 	}
 	req.Header.Set("User-Agent", AGENT)
-	resp, err := client.Do(req)
+	
+	resp, err := sch.makeThrottledRequest(req)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer resp.Body.Close()
+	
 	if resp.StatusCode != 200 {
 		rateLimitRemaining := resp.Header.Get("x-ratelimit-remaining")
 		errorString := fmt.Sprintf("Scholar: HTTP Status Code from URL: %s %d %s rate limit remaining?: %s", requestURL, resp.StatusCode, resp.Status, rateLimitRemaining)
@@ -343,17 +403,18 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 func (sch *Scholar) QueryArticle(url string, article *Article, dumpResponse bool) (*Article, error) {
 	fmt.Println("PULLING ARTICLE: " + url)
 	article.ScholarURL = url
-	client := sch.httpClient
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("User-Agent", AGENT)
-	resp, err := client.Do(req)
+	
+	resp, err := sch.makeThrottledRequest(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
+	
 	if resp.StatusCode != 200 {
 		errorString := fmt.Sprintf("Scholar: HTTP Status Code: %d", resp.StatusCode)
 		return nil, errors.New(errorString)
