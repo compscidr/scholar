@@ -321,8 +321,13 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) ([]*Article, error) {
 	var articles []*Article
 
-	// todo: make page size configurable, also support getting more than one page of citations
-	requestURL := BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=" + strconv.Itoa(limit)
+	// Use a reasonable page size (minimum 20 for Google Scholar) but respect the limit when processing
+	pageSize := limit
+	if pageSize < 20 {
+		pageSize = 20 // Google Scholar typically has a minimum page size
+	}
+	
+	requestURL := BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=" + strconv.Itoa(pageSize)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		return nil, err
@@ -355,7 +360,14 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 		return nil, err
 	}
 
+	// Process articles but respect the limit
+	articlesProcessed := 0
 	doc.Find(".gsc_a_tr").Each(func(i int, s *goquery.Selection) {
+		// Stop processing if we've reached the limit
+		if articlesProcessed >= limit {
+			return
+		}
+		
 		article := &Article{}
 		entry := s.Find(".gsc_a_t")
 		link := entry.Find(".gsc_a_at")
@@ -395,6 +407,7 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 			}
 		}
 		articles = append(articles, article)
+		articlesProcessed++
 	})
 
 	return articles, nil

@@ -120,6 +120,29 @@ func (m *MockRateLimitHTTPClient) mockArticleResponse() (*http.Response, error) 
 	}, nil
 }
 
+// Test article limiting functionality
+func TestArticleLimiting(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetHTTPClient(&MockHTTPClient{})
+	sch.SetRequestDelay(1 * time.Millisecond) // Fast delay for testing
+	
+	// Test different limits
+	testCases := []int{1, 2, 5, 10}
+	
+	for _, limit := range testCases {
+		t.Run(fmt.Sprintf("Limit_%d", limit), func(t *testing.T) {
+			articles, err := sch.QueryProfile("SbUmSEAAAAAJ", limit)
+			assert.NoError(t, err)
+			assert.Len(t, articles, limit, "Should return exactly %d articles", limit)
+			
+			// Verify articles have titles (basic sanity check)
+			for i, article := range articles {
+				assert.NotEmpty(t, article.Title, "Article %d should have a title", i+1)
+			}
+		})
+	}
+}
+
 func TestGetArticles(t *testing.T) {
 	// Test that we can create a Scholar instance and set mock client
 	sch := New("profiles.json", "articles.json")
