@@ -41,4 +41,8 @@ jobs:
         echo "Running integration tests against live Google Scholar API..."
         echo "Note: These tests may fail due to rate limits or network issues - this is expected"
         cd /home/runner/work/scholar/scholar
-        go test -tags integration -v || echo "⚠️  Integration tests failed (this is expected and does not break CI)"
+        if ! go test -tags integration -v; then
+          echo "::warning title=Integration Tests Failed::Integration tests against Google Scholar API failed. This is expected due to rate limits or network restrictions and does not indicate a problem with the code."
+        else
+          echo "✅ Integration tests passed successfully"
+        fi
