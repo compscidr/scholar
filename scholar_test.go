@@ -250,3 +250,23 @@ func TestRequestDelayConfiguration(t *testing.T) {
 	sch.SetRequestDelay(customDelay)
 	assert.Equal(t, customDelay, sch.requestDelay)
 }
+
+// Test pagination behavior by attempting to request more articles than available on one page
+func TestPaginationLogic(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetRequestDelay(1 * time.Millisecond)
+	sch.SetHTTPClient(&MockHTTPClient{})
+	
+	// The sample data has 58 articles in one page. When we request more, 
+	// pagination should kick in but since mock returns the same page, we should get 58
+	articles, err := sch.QueryProfileDumpResponse("SbUmSEAAAAAJ", false, 100, false)
+	assert.NoError(t, err)
+	
+	// Should return 58 articles (all available in sample data)
+	assert.Equal(t, 58, len(articles), "Should return all 58 articles from sample data")
+	
+	// Verify articles have titles (basic sanity check)
+	for i, article := range articles {
+		assert.NotEmpty(t, article.Title, "Article %d should have a title", i+1)
+	}
+}
