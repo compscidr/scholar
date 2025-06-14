@@ -320,9 +320,58 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 // if dumpResponse is true, it will print the response to stdout (useful for debugging)
 func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, limit int, dumpResponse bool) ([]*Article, error) {
 	var articles []*Article
+	
+	// Use a reasonable page size for each request, but not too large to avoid timeouts
+	// Google Scholar typically works with pagesize 20-100
+	pageSize := 80
+	if limit < pageSize {
+		pageSize = limit
+	}
+	if pageSize < 20 {
+		pageSize = 20 // Google Scholar typically has a minimum page size
+	}
+	
+	cstart := 0
+	remainingArticles := limit
+	
+	for remainingArticles > 0 {
+		// Fetch a page of articles
+		pageArticles, err := sch.fetchProfilePage(user, cstart, pageSize, queryArticles, dumpResponse)
+		if err != nil {
+			return nil, err
+		}
+		
+		// If no articles returned, we've reached the end
+		if len(pageArticles) == 0 {
+			break
+		}
+		
+		// Add articles up to our limit
+		articlesToAdd := remainingArticles
+		if len(pageArticles) < articlesToAdd {
+			articlesToAdd = len(pageArticles)
+		}
+		
+		articles = append(articles, pageArticles[:articlesToAdd]...)
+		remainingArticles -= articlesToAdd
+		
+		// If we got fewer articles than requested pagesize, we've reached the end
+		if len(pageArticles) < pageSize {
+			break
+		}
+		
+		// Move to next page
+		cstart += pageSize
+	}
 
-	// todo: make page size configurable, also support getting more than one page of citations
-	requestURL := BaseURL + "/citations?user=" + user + "&cstart=0&pagesize=" + strconv.Itoa(limit)
+	return articles, nil
+}
+
+// fetchProfilePage fetches a single page of articles from Google Scholar
+func (sch *Scholar) fetchProfilePage(user string, cstart, pageSize int, queryArticles bool, dumpResponse bool) ([]*Article, error) {
+	var articles []*Article
+	
+	requestURL := BaseURL + "/citations?user=" + user + "&cstart=" + strconv.Itoa(cstart) + "&pagesize=" + strconv.Itoa(pageSize)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	if err != nil {
 		return nil, err
@@ -346,8 +395,9 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 		if err != nil {
 			return nil, err
 		}
-		req.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
-		println("GOT AUTHOR PAGE: \n", string(bodyBytes))
+		// Reset body for subsequent parsing
+		resp.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+		println("GOT AUTHOR PAGE (cstart=" + strconv.Itoa(cstart) + "): \n", string(bodyBytes))
 	}
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
@@ -355,6 +405,7 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 		return nil, err
 	}
 
+	// Process articles from this page
 	doc.Find(".gsc_a_tr").Each(func(i int, s *goquery.Selection) {
 		article := &Article{}
 		entry := s.Find(".gsc_a_t")
@@ -401,7 +452,6 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 }
 
 func (sch *Scholar) QueryArticle(url string, article *Article, dumpResponse bool) (*Article, error) {
-	fmt.Println("PULLING ARTICLE: " + url)
 	article.ScholarURL = url
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

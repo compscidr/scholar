@@ -120,6 +120,29 @@ func (m *MockRateLimitHTTPClient) mockArticleResponse() (*http.Response, error) 
 	}, nil
 }
 
+// Test article limiting functionality
+func TestArticleLimiting(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetHTTPClient(&MockHTTPClient{})
+	sch.SetRequestDelay(1 * time.Millisecond) // Fast delay for testing
+	
+	// Test different limits
+	testCases := []int{1, 2, 5, 10}
+	
+	for _, limit := range testCases {
+		t.Run(fmt.Sprintf("Limit_%d", limit), func(t *testing.T) {
+			articles, err := sch.QueryProfile("SbUmSEAAAAAJ", limit)
+			assert.NoError(t, err)
+			assert.Len(t, articles, limit, "Should return exactly %d articles", limit)
+			
+			// Verify articles have titles (basic sanity check)
+			for i, article := range articles {
+				assert.NotEmpty(t, article.Title, "Article %d should have a title", i+1)
+			}
+		})
+	}
+}
+
 func TestGetArticles(t *testing.T) {
 	// Test that we can create a Scholar instance and set mock client
 	sch := New("profiles.json", "articles.json")
@@ -226,4 +249,24 @@ func TestRequestDelayConfiguration(t *testing.T) {
 	customDelay := 500 * time.Millisecond
 	sch.SetRequestDelay(customDelay)
 	assert.Equal(t, customDelay, sch.requestDelay)
+}
+
+// Test pagination behavior by attempting to request more articles than available on one page
+func TestPaginationLogic(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetRequestDelay(1 * time.Millisecond)
+	sch.SetHTTPClient(&MockHTTPClient{})
+	
+	// The sample data has 58 articles in one page. When we request more, 
+	// pagination should kick in but since mock returns the same page, we should get 58
+	articles, err := sch.QueryProfileDumpResponse("SbUmSEAAAAAJ", false, 100, false)
+	assert.NoError(t, err)
+	
+	// Should return 58 articles (all available in sample data)
+	assert.Equal(t, 58, len(articles), "Should return all 58 articles from sample data")
+	
+	// Verify articles have titles (basic sanity check)
+	for i, article := range articles {
+		assert.NotEmpty(t, article.Title, "Article %d should have a title", i+1)
+	}
 }
