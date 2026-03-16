@@ -242,6 +242,41 @@ func (sch *Scholar) QueryProfile(user string, limit int) ([]*Article, error) {
 	return sch.QueryProfileDumpResponse(user, true, limit, false)
 }
 
+// loadCachedArticles returns articles from the article cache for a given profile.
+// Articles that fail to refresh (e.g. due to throttling) are served stale.
+func (sch *Scholar) loadCachedArticles(profile Profile) []*Article {
+	articles := make([]*Article, 0)
+	for _, articleURL := range profile.Articles {
+		articleResult, articleOk := sch.articles.Load(articleURL)
+		if articleOk {
+			cacheArticle := articleResult.(*Article)
+			if (time.Now().Sub(cacheArticle.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
+				println("Cache expired for article: " + articleURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
+				article, err := sch.QueryArticle(articleURL, &Article{}, false)
+				if err == nil {
+					sch.articles.Store(articleURL, article)
+					articles = append(articles, article)
+				} else {
+					// Article refresh failed — serve stale cached version
+					articles = append(articles, cacheArticle)
+				}
+			} else {
+				println("Cache hit for article: " + articleURL)
+				articles = append(articles, cacheArticle)
+			}
+		} else {
+			// cache miss, query the article
+			println("Cache miss for article: " + articleURL)
+			article, err := sch.QueryArticle(articleURL, &Article{}, false)
+			if err == nil {
+				articles = append(articles, article)
+				sch.articles.Store(articleURL, article)
+			}
+		}
+	}
+	return articles
+}
+
 func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Article, error) {
 
 	profileResult, profileOk := sch.profile.Load(user)
@@ -260,38 +295,13 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 				sch.profile.Delete(user)
 				sch.profile.Store(user, newProfile)
 			} else {
-				return nil, err
+				// Refresh failed (e.g. throttled) — fall back to stale cached data
+				fmt.Printf("Profile refresh failed for %s: %v — serving stale cache\n", user, err)
+				return sch.loadCachedArticles(profile), nil
 			}
 		} else {
 			println("Profile cache hit for User: " + user)
-			// cache hit, return the Articles
-			articles := make([]*Article, 0)
-			for _, articleURL := range profile.Articles {
-				articleResult, articleOk := sch.articles.Load(articleURL)
-				if articleOk {
-					cacheArticle := articleResult.(*Article)
-					if (time.Now().Sub(cacheArticle.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
-						println("Cache expired for article: " + articleURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
-						article, err := sch.QueryArticle(articleURL, &Article{}, false)
-						if err == nil {
-							sch.articles.Store(articleURL, article)
-							articles = append(articles, article)
-						}
-					} else {
-						println("Cache hit for article: " + articleURL)
-						articles = append(articles, cacheArticle)
-					}
-				} else {
-					// cache miss, query the article
-					println("Cache miss for article: " + articleURL)
-					article, err := sch.QueryArticle(articleURL, &Article{}, false)
-					if err == nil {
-						articles = append(articles, article)
-						sch.articles.Store(articleURL, article)
-					}
-				}
-			}
-			return articles, nil
+			return sch.loadCachedArticles(profile), nil
 		}
 	} else {
 		println("Profile cache miss for User: " + user)

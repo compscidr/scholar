@@ -251,6 +251,44 @@ func TestRequestDelayConfiguration(t *testing.T) {
 	assert.Equal(t, customDelay, sch.requestDelay)
 }
 
+// MockAlwaysFailHTTPClient always returns 429 to simulate persistent throttling
+type MockAlwaysFailHTTPClient struct{}
+
+func (m *MockAlwaysFailHTTPClient) Do(req *http.Request) (*http.Response, error) {
+	return &http.Response{
+		StatusCode: 429,
+		Status:     "Too Many Requests",
+		Body:       io.NopCloser(strings.NewReader("")),
+	}, nil
+}
+
+// Test that when profile cache is expired and refresh fails, stale cached data is returned
+func TestStaleCacheFallback(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetRequestDelay(1 * time.Millisecond)
+	sch.SetHTTPClient(&MockHTTPClient{})
+
+	// First query populates the cache
+	articles, err := sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, articles)
+	originalCount := len(articles)
+
+	// Expire the profile cache by storing it with an old timestamp
+	profileResult, _ := sch.profile.Load("SbUmSEAAAAAJ")
+	profile := profileResult.(Profile)
+	profile.LastRetrieved = time.Now().Add(-48 * time.Hour) // 2 days ago (past 1-day expiry)
+	sch.profile.Store("SbUmSEAAAAAJ", profile)
+
+	// Now switch to a client that always fails
+	sch.SetHTTPClient(&MockAlwaysFailHTTPClient{})
+
+	// Query again — should fall back to stale cache, not return an error
+	articles, err = sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+	assert.NoError(t, err, "Should not return error when stale cache is available")
+	assert.Equal(t, originalCount, len(articles), "Should return same articles from stale cache")
+}
+
 // Test pagination behavior by attempting to request more articles than available on one page
 func TestPaginationLogic(t *testing.T) {
 	sch := New("profiles.json", "articles.json")
