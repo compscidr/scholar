@@ -258,7 +258,11 @@ func (sch *Scholar) loadCachedArticles(profile Profile) []*Article {
 					articles = append(articles, article)
 				} else {
 					// Article refresh failed — serve stale cached version
-					articles = append(articles, cacheArticle)
+					// Update LastRetrieved to avoid retrying on every call
+					stale := *cacheArticle
+					stale.LastRetrieved = time.Now()
+					sch.articles.Store(articleURL, &stale)
+					articles = append(articles, &stale)
 				}
 			} else {
 				println("Cache hit for article: " + articleURL)
@@ -295,9 +299,9 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 					articleList = append(articleList, article.ScholarURL)
 					// Update citation counts from the profile page into cached articles
 					if existing, ok := sch.articles.Load(article.ScholarURL); ok {
-						cached := existing.(*Article)
-						cached.NumCitations = article.NumCitations
-						sch.articles.Store(article.ScholarURL, cached)
+						updated := *existing.(*Article)
+						updated.NumCitations = article.NumCitations
+						sch.articles.Store(article.ScholarURL, &updated)
 					}
 				}
 				newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
@@ -305,8 +309,11 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 				sch.profile.Store(user, newProfile)
 				return sch.loadCachedArticles(newProfile), nil
 			} else {
-				// Refresh failed (e.g. throttled) — fall back to stale cached data
+				// Refresh failed (e.g. throttled) — fall back to stale cached data.
+				// Update LastRetrieved to avoid retrying on every call.
 				fmt.Printf("Profile refresh failed for %s: %v — serving stale cache\n", user, err)
+				profile.LastRetrieved = time.Now()
+				sch.profile.Store(user, profile)
 				cached := sch.loadCachedArticles(profile)
 				if len(cached) > 0 {
 					return cached, nil
@@ -437,6 +444,7 @@ func (sch *Scholar) fetchProfilePage(user string, cstart, pageSize int, queryArt
 		article.Title = link.Text()
 
 		tempURL, _ := link.Attr("href")
+		article.ScholarURL = BaseURL + tempURL
 		article.Year, _ = strconv.Atoi(s.Find(".gsc_a_y").Find("span").Text())
 		article.NumCitations, _ = strconv.Atoi(s.Find(".gsc_a_c").Children().First().Text())
 
