@@ -23,8 +23,8 @@ type HTTPClient interface {
 
 const BaseURL = "https://scholar.google.com"
 const AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/81.0"
-const MAX_TIME_PROFILE = time.Second * 3600 * 24     // 1 Day
-const MAX_TIME_ARTICLE = time.Second * 3600 * 24 * 7 // 1 week
+const MAX_TIME_PROFILE = time.Second * 3600 * 24 * 7  // 1 week
+const MAX_TIME_ARTICLE = time.Second * 3600 * 24 * 30 // 30 days
 
 type Article struct {
 	Title               string
@@ -258,7 +258,11 @@ func (sch *Scholar) loadCachedArticles(profile Profile) []*Article {
 					articles = append(articles, article)
 				} else {
 					// Article refresh failed — serve stale cached version
-					articles = append(articles, cacheArticle)
+					// Update LastRetrieved to avoid retrying on every call
+					stale := *cacheArticle
+					stale.LastRetrieved = time.Now()
+					sch.articles.Store(articleURL, &stale)
+					articles = append(articles, &stale)
 				}
 			} else {
 				println("Cache hit for article: " + articleURL)
@@ -285,19 +289,31 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 		lastAccess := profile.LastRetrieved
 		if (time.Now().Sub(lastAccess)).Seconds() > MAX_TIME_PROFILE.Seconds() {
 			println("Profile cache expired for User: " + user)
-			articles, err := sch.QueryProfileDumpResponse(user, true, limit, false)
+			// Only fetch the profile page (queryArticles=false) to get the
+			// updated article list. Article details are served from cache
+			// via loadCachedArticles, which refreshes only expired entries.
+			profileArticles, err := sch.QueryProfileDumpResponse(user, false, limit, false)
 			if err == nil {
 				var articleList []string
-				for _, article := range articles {
+				for _, article := range profileArticles {
 					articleList = append(articleList, article.ScholarURL)
+					// Update citation counts from the profile page into cached articles
+					if existing, ok := sch.articles.Load(article.ScholarURL); ok {
+						updated := *existing.(*Article)
+						updated.NumCitations = article.NumCitations
+						sch.articles.Store(article.ScholarURL, &updated)
+					}
 				}
 				newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
 				sch.profile.Delete(user)
 				sch.profile.Store(user, newProfile)
-				return articles, nil
+				return sch.loadCachedArticles(newProfile), nil
 			} else {
-				// Refresh failed (e.g. throttled) — fall back to stale cached data
+				// Refresh failed (e.g. throttled) — fall back to stale cached data.
+				// Update LastRetrieved to avoid retrying on every call.
 				fmt.Printf("Profile refresh failed for %s: %v — serving stale cache\n", user, err)
+				profile.LastRetrieved = time.Now()
+				sch.profile.Store(user, profile)
 				cached := sch.loadCachedArticles(profile)
 				if len(cached) > 0 {
 					return cached, nil
@@ -428,6 +444,7 @@ func (sch *Scholar) fetchProfilePage(user string, cstart, pageSize int, queryArt
 		article.Title = link.Text()
 
 		tempURL, _ := link.Attr("href")
+		article.ScholarURL = BaseURL + tempURL
 		article.Year, _ = strconv.Atoi(s.Find(".gsc_a_y").Find("span").Text())
 		article.NumCitations, _ = strconv.Atoi(s.Find(".gsc_a_c").Children().First().Text())
 

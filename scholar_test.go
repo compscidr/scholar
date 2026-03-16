@@ -278,7 +278,7 @@ func TestStaleCacheFallback(t *testing.T) {
 	// Expire the profile cache by storing it with an old timestamp
 	profileResult, _ := sch.profile.Load("SbUmSEAAAAAJ")
 	profile := profileResult.(Profile)
-	profile.LastRetrieved = time.Now().Add(-48 * time.Hour) // 2 days ago (past 1-day expiry)
+	profile.LastRetrieved = time.Now().Add(-8 * 24 * time.Hour) // 8 days ago (past 7-day expiry)
 	sch.profile.Store("SbUmSEAAAAAJ", profile)
 
 	// Now switch to a client that always fails
@@ -288,6 +288,43 @@ func TestStaleCacheFallback(t *testing.T) {
 	articles, err = sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
 	assert.NoError(t, err, "Should not return error when stale cache is available")
 	assert.Equal(t, originalCount, len(articles), "Should return same articles from stale cache")
+}
+
+// Test that profile refresh with queryArticles=false correctly preserves article URLs
+// and returns cached article details
+func TestProfileRefreshPreservesArticles(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetRequestDelay(1 * time.Millisecond)
+	sch.SetHTTPClient(&MockHTTPClient{})
+
+	// First query populates both profile and article caches (queryArticles=true for cache miss)
+	articles, err := sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, articles)
+	originalCount := len(articles)
+
+	// Verify articles have full details (authors populated by QueryArticle)
+	for _, a := range articles {
+		assert.NotEmpty(t, a.ScholarURL, "Article should have ScholarURL")
+		assert.NotEmpty(t, a.Authors, "Article should have Authors from detail page")
+	}
+
+	// Expire the profile cache so the next call triggers a profile-only refresh
+	profileResult, _ := sch.profile.Load("SbUmSEAAAAAJ")
+	profile := profileResult.(Profile)
+	profile.LastRetrieved = time.Now().Add(-8 * 24 * time.Hour) // 8 days ago
+	sch.profile.Store("SbUmSEAAAAAJ", profile)
+
+	// Second query should refresh profile (queryArticles=false) and serve article details from cache
+	articles2, err := sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+	assert.NoError(t, err)
+	assert.Equal(t, originalCount, len(articles2), "Should return same number of articles after profile refresh")
+
+	// Verify articles still have full details from cache
+	for _, a := range articles2 {
+		assert.NotEmpty(t, a.ScholarURL, "Article should still have ScholarURL after profile refresh")
+		assert.NotEmpty(t, a.Authors, "Article should still have Authors from cache after profile refresh")
+	}
 }
 
 // Test pagination behavior by attempting to request more articles than available on one page
