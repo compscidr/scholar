@@ -251,13 +251,14 @@ func TestRequestDelayConfiguration(t *testing.T) {
 	assert.Equal(t, customDelay, sch.requestDelay)
 }
 
-// MockAlwaysFailHTTPClient always returns 429 to simulate persistent throttling
+// MockAlwaysFailHTTPClient returns 500 to simulate server failure without
+// triggering the 429 retry/backoff logic (which is tested separately in TestRateLimitRetry).
 type MockAlwaysFailHTTPClient struct{}
 
 func (m *MockAlwaysFailHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	return &http.Response{
-		StatusCode: 429,
-		Status:     "Too Many Requests",
+		StatusCode: 500,
+		Status:     "Internal Server Error",
 		Body:       io.NopCloser(strings.NewReader("")),
 	}, nil
 }

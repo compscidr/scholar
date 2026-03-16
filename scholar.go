@@ -294,10 +294,15 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 				newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
 				sch.profile.Delete(user)
 				sch.profile.Store(user, newProfile)
+				return articles, nil
 			} else {
 				// Refresh failed (e.g. throttled) — fall back to stale cached data
 				fmt.Printf("Profile refresh failed for %s: %v — serving stale cache\n", user, err)
-				return sch.loadCachedArticles(profile), nil
+				cached := sch.loadCachedArticles(profile)
+				if len(cached) > 0 {
+					return cached, nil
+				}
+				return nil, err
 			}
 		} else {
 			println("Profile cache hit for User: " + user)
