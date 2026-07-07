@@ -2,7 +2,7 @@ module github.com/compscidr/scholar
 
 go 1.25.0
 
-toolchain go1.26.4
+toolchain go1.26.5
 
 require (
 	github.com/PuerkitoBio/goquery v1.12.0
