@@ -63,5 +63,23 @@ The library automatically throttles requests to avoid hitting Google Scholar's r
 * Automatic retry with exponential backoff for 429 responses (up to 3 retries)
 * Backoff delays: 5s, 10s, 20s for subsequent retries
 
+## Blocked IPs and Failure Cooldown
+Google Scholar refuses requests from IPs it believes send automated queries (cloud/datacenter
+ranges are commonly affected). Such responses are a `403` with a "Sorry..." page rather than a
+`429`, so they are not retried. The library reports them as `ErrBlocked`:
+```go
+articles, err := sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 50)
+if errors.Is(err, go_scholar.ErrBlocked) {
+    // this IP is blocked; retrying will not help
+}
+```
+When a fetch fails for a user with **no cached data**, the library will not contact Google again for
+that user until a cooldown has passed (default 1 hour), returning the original error in the meantime.
+This stops an empty-cache consumer from turning every call into a new request:
+```go
+sch.SetFailureCooldown(10 * time.Minute) // or 0 to disable
+```
+When cached data exists, a failed refresh falls back to the stale cache as before.
+
 ## Possible throttle info:
 https://stackoverflow.com/questions/60271587/how-long-is-the-error-429-toomanyrequests-cooldown

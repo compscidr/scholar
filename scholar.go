@@ -26,6 +26,23 @@ const AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/8
 const MAX_TIME_PROFILE = time.Second * 3600 * 24 * 7  // 1 week
 const MAX_TIME_ARTICLE = time.Second * 3600 * 24 * 30 // 30 days
 
+// DefaultFailureCooldown is how long, after a failed fetch for a user with no
+// cached data, the library refuses to contact Google again for that user.
+// Google blocks IPs it thinks send automated queries; retrying on every call
+// only reinforces that. Configurable via SetFailureCooldown.
+const DefaultFailureCooldown = time.Hour
+
+// ErrBlocked is wrapped into the error returned when Google Scholar answers
+// with its "automated queries" block page rather than the requested profile.
+// Check with errors.Is to tell a blocked IP apart from a missing profile.
+var ErrBlocked = errors.New("blocked by Google Scholar (automated queries)")
+
+// fetchFailure records the last failed fetch for a user.
+type fetchFailure struct {
+	at  time.Time
+	err error
+}
+
 type Article struct {
 	Title               string
 	Authors             string
@@ -61,6 +78,10 @@ type Scholar struct {
 	requestDelay  time.Duration // delay between requests
 	lastRequest   time.Time     // timestamp of last request
 	requestMutex  sync.Mutex    // mutex to synchronize requests
+
+	failureCooldown time.Duration           // see DefaultFailureCooldown
+	failures        map[string]fetchFailure // last failed fetch per user, cleared on success
+	failureMu       sync.Mutex
 }
 
 func New(profileCache string, articleCache string) *Scholar {
@@ -75,6 +96,9 @@ func New(profileCache string, articleCache string) *Scholar {
 		},
 		requestDelay: requestDelay,
 		lastRequest:  time.Time{}, // zero time initially
+
+		failureCooldown: DefaultFailureCooldown,
+		failures:        make(map[string]fetchFailure),
 	}
 
 	profileFile, err := os.Open(profileCache)
@@ -131,6 +155,17 @@ func New(profileCache string, articleCache string) *Scholar {
 // SetHTTPClient allows setting a custom HTTP client (useful for testing)
 func (sch *Scholar) SetHTTPClient(client HTTPClient) {
 	sch.httpClient = client
+}
+
+// SetFailureCooldown sets how long a failed fetch for a user without cached
+// data suppresses further requests for that user. Zero disables the cooldown.
+func (sch *Scholar) SetFailureCooldown(d time.Duration) {
+	sch.failureMu.Lock()
+	defer sch.failureMu.Unlock()
+	sch.failureCooldown = d
+	if d <= 0 {
+		sch.failures = make(map[string]fetchFailure)
+	}
 }
 
 // SetRequestDelay allows setting a custom delay between requests for throttling
@@ -326,8 +361,14 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 		}
 	} else {
 		println("Profile cache miss for User: " + user)
+		// With nothing cached there is no stale data to fall back to, so a
+		// failure here would otherwise turn every call into a new request.
+		if f, ok := sch.inFailureCooldown(user); ok {
+			return nil, fmt.Errorf("skipping fetch for %s, last attempt %s ago failed: %w", user, time.Since(f.at).Round(time.Second), f.err)
+		}
 		articles, err := sch.QueryProfileDumpResponse(user, true, limit, false)
 		if err == nil {
+			sch.clearFailure(user)
 			var articleList []string
 			for _, article := range articles {
 				articleList = append(articleList, article.ScholarURL)
@@ -336,6 +377,7 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 			sch.profile.Store(user, newProfile)
 			return articles, nil
 		} else {
+			sch.recordFailure(user, err)
 			return nil, err
 		}
 	}
@@ -398,6 +440,53 @@ func (sch *Scholar) QueryProfileDumpResponse(user string, queryArticles bool, li
 	return articles, nil
 }
 
+// isBlockPage reports whether a 403 body is Google's "automated queries"
+// block page, as opposed to some other forbidden response.
+func isBlockPage(body io.Reader) bool {
+	b, err := io.ReadAll(io.LimitReader(body, 64*1024))
+	if err != nil {
+		return false
+	}
+	return bytes.Contains(b, []byte("automated queries"))
+}
+
+// inFailureCooldown returns the recorded failure for user if one happened
+// less than failureCooldown ago. Expired entries are dropped when noticed so
+// the map only ever holds users currently in cooldown.
+func (sch *Scholar) inFailureCooldown(user string) (fetchFailure, bool) {
+	sch.failureMu.Lock()
+	defer sch.failureMu.Unlock()
+	if sch.failureCooldown <= 0 {
+		return fetchFailure{}, false
+	}
+	f, ok := sch.failures[user]
+	if !ok {
+		return fetchFailure{}, false
+	}
+	if time.Since(f.at) >= sch.failureCooldown {
+		delete(sch.failures, user)
+		return fetchFailure{}, false
+	}
+	return f, true
+}
+
+// recordFailure remembers a failed fetch for user; a no-op when the cooldown
+// is disabled, so nothing accumulates that would never be read.
+func (sch *Scholar) recordFailure(user string, err error) {
+	sch.failureMu.Lock()
+	defer sch.failureMu.Unlock()
+	if sch.failureCooldown <= 0 {
+		return
+	}
+	sch.failures[user] = fetchFailure{at: time.Now(), err: err}
+}
+
+func (sch *Scholar) clearFailure(user string) {
+	sch.failureMu.Lock()
+	defer sch.failureMu.Unlock()
+	delete(sch.failures, user)
+}
+
 // fetchProfilePage fetches a single page of articles from Google Scholar
 func (sch *Scholar) fetchProfilePage(user string, cstart, pageSize int, queryArticles bool, dumpResponse bool) ([]*Article, error) {
 	var articles []*Article
@@ -418,6 +507,9 @@ func (sch *Scholar) fetchProfilePage(user string, cstart, pageSize int, queryArt
 	if resp.StatusCode != 200 {
 		rateLimitRemaining := resp.Header.Get("x-ratelimit-remaining")
 		errorString := fmt.Sprintf("Scholar: HTTP Status Code from URL: %s %d %s rate limit remaining?: %s", requestURL, resp.StatusCode, resp.Status, rateLimitRemaining)
+		if resp.StatusCode == 403 && isBlockPage(resp.Body) {
+			return nil, fmt.Errorf("%s: %w", errorString, ErrBlocked)
+		}
 		return nil, errors.New(errorString)
 	}
 
