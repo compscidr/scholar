@@ -1,6 +1,7 @@
 package go_scholar
 
 import (
+	"errors"
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -345,4 +346,104 @@ func TestPaginationLogic(t *testing.T) {
 	for i, article := range articles {
 		assert.NotEmpty(t, article.Title, "Article %d should have a title", i+1)
 	}
+}
+
+// MockBlockedHTTPClient mimics Google Scholar refusing a datacenter IP: every
+// request gets a 403 with the "automated queries" block page. It counts calls.
+type MockBlockedHTTPClient struct{ Calls int }
+
+func (m *MockBlockedHTTPClient) Do(req *http.Request) (*http.Response, error) {
+	m.Calls++
+	return &http.Response{
+		StatusCode: 403,
+		Status:     "403 Forbidden",
+		Header:     http.Header{},
+		Body:       io.NopCloser(strings.NewReader("<html><title>Sorry...</title><body>We're sorry... but your computer or network may be sending automated queries.</body></html>")),
+	}, nil
+}
+
+// MockNotFoundHTTPClient returns 404 for everything, to contrast with a block.
+type MockNotFoundHTTPClient struct{}
+
+func (m *MockNotFoundHTTPClient) Do(req *http.Request) (*http.Response, error) {
+	return &http.Response{
+		StatusCode: 404,
+		Status:     "404 Not Found",
+		Header:     http.Header{},
+		Body:       io.NopCloser(strings.NewReader("")),
+	}, nil
+}
+
+// A cache miss that fails must not be retried on every call: with no cached
+// data to fall back to, each call would otherwise be a new request to Google,
+// which only reinforces an "automated queries" block.
+func TestCacheMissFailureCooldown(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetRequestDelay(1 * time.Millisecond)
+	client := &MockBlockedHTTPClient{}
+	sch.SetHTTPClient(client)
+
+	_, err := sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+	assert.Error(t, err)
+	assert.Equal(t, 1, client.Calls)
+
+	for i := 0; i < 5; i++ {
+		_, err = sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+		assert.Error(t, err, "calls during the cooldown must still report the failure")
+	}
+	assert.Equal(t, 1, client.Calls, "no further requests during the cooldown")
+	assert.True(t, errors.Is(err, ErrBlocked), "the cooldown error must preserve the original cause: %v", err)
+
+	// A different user is not affected by this user's failure.
+	_, _ = sch.QueryProfileWithMemoryCache("OtherUser", 10)
+	assert.Equal(t, 2, client.Calls)
+
+	// Once the cooldown has passed, the next call tries again.
+	sch.failureMu.Lock()
+	f := sch.failures["SbUmSEAAAAAJ"]
+	f.at = time.Now().Add(-sch.failureCooldown - time.Minute)
+	sch.failures["SbUmSEAAAAAJ"] = f
+	sch.failureMu.Unlock()
+	_, _ = sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+	assert.Equal(t, 3, client.Calls, "expected a retry after the cooldown")
+}
+
+// A successful fetch clears any recorded failure, and the cooldown is configurable.
+func TestFailureCooldownClearedOnSuccessAndConfigurable(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetRequestDelay(1 * time.Millisecond)
+	sch.SetHTTPClient(&MockBlockedHTTPClient{})
+
+	_, err := sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+	assert.Error(t, err)
+
+	// Disabling the cooldown means the very next call goes to the network again.
+	sch.SetFailureCooldown(0)
+	sch.SetHTTPClient(&MockHTTPClient{})
+	articles, err := sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, articles)
+
+	sch.failureMu.Lock()
+	_, stillRecorded := sch.failures["SbUmSEAAAAAJ"]
+	sch.failureMu.Unlock()
+	assert.False(t, stillRecorded, "a successful fetch must clear the recorded failure")
+}
+
+// Google's block page is reported as ErrBlocked so callers can tell it apart
+// from a profile that doesn't exist.
+func TestErrBlocked(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	sch.SetRequestDelay(1 * time.Millisecond)
+
+	sch.SetHTTPClient(&MockBlockedHTTPClient{})
+	_, err := sch.QueryProfile("SbUmSEAAAAAJ", 10)
+	assert.True(t, errors.Is(err, ErrBlocked), "expected ErrBlocked, got %v", err)
+	assert.Contains(t, err.Error(), "403", "the status should still be in the message")
+
+	sch.SetFailureCooldown(0)
+	sch.SetHTTPClient(&MockNotFoundHTTPClient{})
+	_, err = sch.QueryProfile("SbUmSEAAAAAJ", 10)
+	assert.Error(t, err)
+	assert.False(t, errors.Is(err, ErrBlocked), "a plain 404 is not a block")
 }
