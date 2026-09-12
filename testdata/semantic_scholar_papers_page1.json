@@ -1,0 +1,1300 @@
+{
+ "offset": 0,
+ "next": 30,
+ "data": [
+  {
+   "paperId": "c6a7ad952a139f8ee66f251f6d7e74044f62558c",
+   "externalIds": {
+    "DBLP": "journals/access/SafariKEG23",
+    "DOI": "10.1109/ACCESS.2023.3277817",
+    "CorpusId": 258796854
+   },
+   "url": "https://www.semanticscholar.org/paper/c6a7ad952a139f8ee66f251f6d7e74044f62558c",
+   "title": "A Novel Cross-Layer Adaptive Fuzzy-Based Ad Hoc On-Demand Distance Vector Routing Protocol for MANETs",
+   "venue": "IEEE Access",
+   "year": 2023,
+   "citationCount": 25,
+   "openAccessPdf": {
+    "url": "https://ieeexplore.ieee.org/ielx7/6287639/10005208/10129200.pdf",
+    "status": "GOLD",
+    "license": "CCBYNCND"
+   },
+   "publicationDate": null,
+   "journal": {
+    "volume": "11",
+    "pages": "50805-50822",
+    "name": "IEEE Access"
+   },
+   "authors": [
+    {
+     "authorId": "2831115",
+     "name": "F. Safari"
+    },
+    {
+     "authorId": "49553388",
+     "name": "H. Kunze"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "46755997",
+     "name": "D. Gillis"
+    }
+   ],
+   "abstract": "One of the essential processes in Mobile Ad hoc Networks (MANETs) is blind flooding to discover routes between source an"
+  },
+  {
+   "paperId": "d87ccdd7ac0f2a4a953cc680ed1e54c2da87f42b",
+   "externalIds": {
+    "DOI": "10.18178/ijfcc.2023.12.2.601",
+    "CorpusId": 259635627
+   },
+   "url": "https://www.semanticscholar.org/paper/d87ccdd7ac0f2a4a953cc680ed1e54c2da87f42b",
+   "title": "The Diverse Technology of MANETs: A Survey of Applications and Challenges",
+   "venue": "International Journal of Future Computer and Communication",
+   "year": 2023,
+   "citationCount": 23,
+   "openAccessPdf": {
+    "url": "https://www.ijfcc.org/vol12/601-NC03.pdf",
+    "status": "GOLD",
+    "license": "CCBY"
+   },
+   "publicationDate": "2023-06-01",
+   "journal": {
+    "name": "International Journal of Future Computer and Communication"
+   },
+   "authors": [
+    {
+     "authorId": "2831115",
+     "name": "F. Safari"
+    },
+    {
+     "authorId": "2149758772",
+     "name": "Izabela Savic"
+    },
+    {
+     "authorId": "49553388",
+     "name": "H. Kunze"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2222314204",
+     "name": "Daniel Gillis"
+    }
+   ],
+   "abstract": "In recent years, mobile ad hoc networks (MANETs) have shown much potential in providing wireless network solutions for a"
+  },
+  {
+   "paperId": "f1c6c56b4b4ae1b506a9098aa3d2358527ff946e",
+   "externalIds": {
+    "DBLP": "conf/wimob/SafariSKEG23",
+    "DOI": "10.1109/WiMob58348.2023.10187830",
+    "CorpusId": 260172440
+   },
+   "url": "https://www.semanticscholar.org/paper/f1c6c56b4b4ae1b506a9098aa3d2358527ff946e",
+   "title": "A Review of AI-based MANET Routing Protocols",
+   "venue": "2023 19th International Conference on Wireless and Mobile Computing, Networking and Communications (WiMob)",
+   "year": 2023,
+   "citationCount": 6,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2023-06-21",
+   "journal": {
+    "pages": "43-50",
+    "name": "2023 19th International Conference on Wireless and Mobile Computing, Networking and Communications (WiMob)"
+   },
+   "authors": [
+    {
+     "authorId": "2831115",
+     "name": "F. Safari"
+    },
+    {
+     "authorId": "2149758772",
+     "name": "Izabela Savic"
+    },
+    {
+     "authorId": "49553388",
+     "name": "H. Kunze"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "46755997",
+     "name": "D. Gillis"
+    }
+   ],
+   "abstract": "Developing scalable and robust routing protocols for Mobile ad hoc Networks (MANETs) can be challenging given issues rel"
+  },
+  {
+   "paperId": "1c637d28828ab41d2346691ff302e8f876cbaae8",
+   "externalIds": {
+    "MAG": "2996124514",
+    "DOI": "10.1109/IEMCON.2019.8936268",
+    "CorpusId": 209457304
+   },
+   "url": "https://www.semanticscholar.org/paper/1c637d28828ab41d2346691ff302e8f876cbaae8",
+   "title": "Incorporation of Node Mobility in Data Replication Schemes in Mobile Ad Hoc Networks",
+   "venue": "IEEE Annual Information Technology, Electronics and Mobile Communication Conference",
+   "year": 2019,
+   "citationCount": 1,
+   "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null
+   },
+   "publicationDate": "2019-10-01",
+   "journal": {
+    "pages": "0230-0236",
+    "name": "2019 IEEE 10th Annual Information Technology, Electronics and Mobile Communication Conference (IEMCON)"
+   },
+   "authors": [
+    {
+     "authorId": "1471438361",
+     "name": "Marshall Asch"
+    },
+    {
+     "authorId": "2074083759",
+     "name": "P. F. Seymour"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "46755997",
+     "name": "D. Gillis"
+    }
+   ],
+   "abstract": "In this paper, we investigate the impact that human mobility and social interactions have on data replication schemes in"
+  },
+  {
+   "paperId": "3efd00c9365f755afbc141d4353398f30baa6968",
+   "externalIds": {
+    "MAG": "2744071776",
+    "DBLP": "books/sp/18/HamedEK18a",
+    "DOI": "10.1007/978-3-319-58424-9_7",
+    "CorpusId": 67185155
+   },
+   "url": "https://www.semanticscholar.org/paper/3efd00c9365f755afbc141d4353398f30baa6968",
+   "title": "A Survey and Taxonomy on Data and Pre-processing Techniques of Intrusion Detection Systems",
+   "venue": "Computer and Network Security Essentials",
+   "year": 2018,
+   "citationCount": 18,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "pages": "113-134"
+   },
+   "authors": [
+    {
+     "authorId": "1912492",
+     "name": "Tarfa Hamed"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2492622",
+     "name": "S. C. Kremer"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "74b635ef1575396dd20b22bc9f2615dbdb0df942",
+   "externalIds": {
+    "DBLP": "books/sp/18/ErnstHK18",
+    "MAG": "2742572147",
+    "DOI": "10.1007/978-3-319-58424-9_32",
+    "CorpusId": 67443543
+   },
+   "url": "https://www.semanticscholar.org/paper/74b635ef1575396dd20b22bc9f2615dbdb0df942",
+   "title": "A Survey and Comparison of Performance Evaluation in Intrusion Detection Systems",
+   "venue": "Computer and Network Security Essentials",
+   "year": 2018,
+   "citationCount": 11,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "pages": "555-568"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "1912492",
+     "name": "Tarfa Hamed"
+    },
+    {
+     "authorId": "2492622",
+     "name": "S. C. Kremer"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "acea0aada3b7c58b3711507f0935cfb4606eab72",
+   "externalIds": {
+    "ArXiv": "1810.05365",
+    "MAG": "2891724828",
+    "DBLP": "journals/corr/abs-1810-05365",
+    "DOI": "10.1109/ACCESS.2018.2870644",
+    "CorpusId": 52960480
+   },
+   "url": "https://www.semanticscholar.org/paper/acea0aada3b7c58b3711507f0935cfb4606eab72",
+   "title": "Decentralized Applications: The Blockchain-Empowered Software System",
+   "venue": "IEEE Access",
+   "year": 2018,
+   "citationCount": 394,
+   "openAccessPdf": {
+    "url": "https://doi.org/10.1109/access.2018.2870644",
+    "status": "GOLD",
+    "license": null
+   },
+   "publicationDate": "2018-09-17",
+   "journal": {
+    "volume": "6",
+    "pages": "53019-53033",
+    "name": "IEEE Access"
+   },
+   "authors": [
+    {
+     "authorId": "2090297844",
+     "name": "Wei Cai"
+    },
+    {
+     "authorId": "2108723692",
+     "name": "Zehua Wang"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2112932536",
+     "name": "Zhen Hong"
+    },
+    {
+     "authorId": "2117343752",
+     "name": "Chen Feng"
+    },
+    {
+     "authorId": "143698682",
+     "name": "Victor C. M. Leung"
+    }
+   ],
+   "abstract": "Blockchain technology has attracted tremendous attention in both academia and capital market. However, overwhelming spec"
+  },
+  {
+   "paperId": "c4a6d97e82b2992058f72dc3e0489c7375e3b698",
+   "externalIds": {
+    "DBLP": "books/sp/18/HamedEK18",
+    "MAG": "2742479121",
+    "DOI": "10.1007/978-3-319-58424-9_2",
+    "CorpusId": 67436752
+   },
+   "url": "https://www.semanticscholar.org/paper/c4a6d97e82b2992058f72dc3e0489c7375e3b698",
+   "title": "A Survey and Taxonomy of Classifiers of Intrusion Detection Systems",
+   "venue": "Computer and Network Security Essentials",
+   "year": 2018,
+   "citationCount": 41,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "pages": "21-39"
+   },
+   "authors": [
+    {
+     "authorId": "1912492",
+     "name": "Tarfa Hamed"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2492622",
+     "name": "S. C. Kremer"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "802016495f49ec249cff3bfc7fd17890dd5e4ec1",
+   "externalIds": {
+    "MAG": "2274257809",
+    "CorpusId": 112891150
+   },
+   "url": "https://www.semanticscholar.org/paper/802016495f49ec249cff3bfc7fd17890dd5e4ec1",
+   "title": "SIMULATION MODELS AND FRAMEWORK TO SUPPORT CONNECTION POINT SELECTION IN HWNS TO IMPROVE QOS/QOE, REDUCE COST AND INCREASE PROFITS",
+   "venue": "",
+   "year": 2016,
+   "citationCount": 0,
+   "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null
+   },
+   "publicationDate": "2016-01-15",
+   "journal": {
+    "volume": "",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "1268fef2e8e6d9cf369dab8859fbe533099c5488",
+   "externalIds": {
+    "MAG": "2273787980",
+    "DOI": "10.1007/978-3-319-13881-7_35",
+    "CorpusId": 61232180
+   },
+   "url": "https://www.semanticscholar.org/paper/1268fef2e8e6d9cf369dab8859fbe533099c5488",
+   "title": "Stochastic Model of Cognitive Agents Learning to Cross a Highway",
+   "venue": "",
+   "year": 2015,
+   "citationCount": 4,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "volume": "",
+    "pages": "319-326",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "6bd4ff368de7bebd372797f47fecad72b35fad0c",
+   "externalIds": {
+    "DBLP": "conf/sac/ErnstKR15",
+    "MAG": "2089666950",
+    "DOI": "10.1145/2695664.2695817",
+    "CorpusId": 207221775
+   },
+   "url": "https://www.semanticscholar.org/paper/6bd4ff368de7bebd372797f47fecad72b35fad0c",
+   "title": "Performance evaluation of heterogeneous wireless networks considering competing objectives and viewpoints",
+   "venue": "ACM Symposium on Applied Computing",
+   "year": 2015,
+   "citationCount": 2,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2015-04-13",
+   "journal": {
+    "name": "Proceedings of the 30th Annual ACM Symposium on Applied Computing"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2492622",
+     "name": "S. C. Kremer"
+    },
+    {
+     "authorId": "144091143",
+     "name": "J. Rodrigues"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "9f46f0edb8b303332d19cc79b1f210ca15966f12",
+   "externalIds": {
+    "DBLP": "conf/icc/ErnstKR15",
+    "MAG": "1548922291",
+    "DOI": "10.1109/ICC.2015.7249280",
+    "CorpusId": 39411064
+   },
+   "url": "https://www.semanticscholar.org/paper/9f46f0edb8b303332d19cc79b1f210ca15966f12",
+   "title": "Heterogeneous wireless network RAT selection with multiple operators and service contracts",
+   "venue": "2015 IEEE International Conference on Communications (ICC)",
+   "year": 2015,
+   "citationCount": 3,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2015-06-08",
+   "journal": {
+    "pages": "6011-6017",
+    "name": "2015 IEEE International Conference on Communications (ICC)"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2492622",
+     "name": "S. C. Kremer"
+    },
+    {
+     "authorId": "144091143",
+     "name": "J. Rodrigues"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "03e8f41b833ab570d1ffc292605c5cd4d34ee897",
+   "externalIds": {
+    "DBLP": "conf/icc/ErnstKR14",
+    "MAG": "2073871162",
+    "DOI": "10.1109/ICC.2014.6883676",
+    "CorpusId": 40616260
+   },
+   "url": "https://www.semanticscholar.org/paper/03e8f41b833ab570d1ffc292605c5cd4d34ee897",
+   "title": "A utility based access point selection method for IEEE 802.11 wireless networks with enhanced quality of experience",
+   "venue": "2014 IEEE International Conference on Communications (ICC)",
+   "year": 2014,
+   "citationCount": 18,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2014-06-10",
+   "journal": {
+    "pages": "2363-2368",
+    "name": "2014 IEEE International Conference on Communications (ICC)"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2492622",
+     "name": "S. C. Kremer"
+    },
+    {
+     "authorId": "144091143",
+     "name": "J. Rodrigues"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "08154d12a60d525dafbf528278c41b65cdf3dfde",
+   "externalIds": {
+    "MAG": "1991078065",
+    "DBLP": "conf/complexsystems/LawniczakES14",
+    "DOI": "10.1016/j.procs.2014.09.031",
+    "CorpusId": 37911959
+   },
+   "url": "https://www.semanticscholar.org/paper/08154d12a60d525dafbf528278c41b65cdf3dfde",
+   "title": "Biomimicry based Learning Outcomes of Simple Cognitive Agents",
+   "venue": "Complex Adaptive Systems",
+   "year": 2014,
+   "citationCount": 7,
+   "openAccessPdf": {
+    "url": "https://www.sciencedirect.com/science/article/pii/S1877050914012800/pdf",
+    "status": "GOLD",
+    "license": "CCBYNCND"
+   },
+   "publicationDate": null,
+   "journal": {
+    "pages": "508-514"
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    }
+   ],
+   "abstract": "Abstract We discuss a model of a complex system that could be used as an experimental virtual reality platform to study "
+  },
+  {
+   "paperId": "388a3d0a55136ea4dbe202731b4ed2833a3f96a3",
+   "externalIds": {
+    "DBLP": "conf/ieeeIA/LawniczakSE14",
+    "MAG": "2028913248",
+    "DOI": "10.1109/IA.2014.7009455",
+    "CorpusId": 5348110
+   },
+   "url": "https://www.semanticscholar.org/paper/388a3d0a55136ea4dbe202731b4ed2833a3f96a3",
+   "title": "Na\u00efve creature learns to cross a highway in a simulated CA-like environment",
+   "venue": "IEEE Symposium on Intelligent Agents",
+   "year": 2014,
+   "citationCount": 9,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2014-12-01",
+   "journal": {
+    "pages": "30-37",
+    "name": "2014 IEEE Symposium on Intelligent Agents (IA)"
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "523f78cc463cbd495e14cdede9f4aa4734b873ed",
+   "externalIds": {
+    "MAG": "2613927812",
+    "CorpusId": 115022812
+   },
+   "url": "https://www.semanticscholar.org/paper/523f78cc463cbd495e14cdede9f4aa4734b873ed",
+   "title": "Biomimicry%ased / earning 2 utcomes of 6imple & ognitive $ gents",
+   "venue": "",
+   "year": 2014,
+   "citationCount": 0,
+   "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "volume": "",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    }
+   ],
+   "abstract": "We discuss a model of a complex system that could be used as an experimental virtual reality platform to study learning "
+  },
+  {
+   "paperId": "6690bdf53fdcd71c64fd37b7fd64d28613ab532e",
+   "externalIds": {
+    "MAG": "2540833734",
+    "DOI": "10.1109/ICSEMR.2014.7043566",
+    "CorpusId": 40764348
+   },
+   "url": "https://www.semanticscholar.org/paper/6690bdf53fdcd71c64fd37b7fd64d28613ab532e",
+   "title": "Heterogeneous wireless networks and cross-layer routing",
+   "venue": "International Conference on Science Engineering and Management Research",
+   "year": 2014,
+   "citationCount": 0,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2014-11-01",
+   "journal": {
+    "pages": "1-3",
+    "name": "2014 International Conference on Science Engineering and Management Research (ICSEMR)"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "7222b4d8c276450d8eb9c8cc39dea1c340d417ec",
+   "externalIds": {
+    "DBLP": "phd/sg/Guruacharya14",
+    "MAG": "2529670634",
+    "DOI": "10.32657/10356/61716",
+    "CorpusId": 62450256
+   },
+   "url": "https://www.semanticscholar.org/paper/7222b4d8c276450d8eb9c8cc39dea1c340d417ec",
+   "title": "Radio resource management in heterogeneous wireless networks",
+   "venue": "",
+   "year": 2014,
+   "citationCount": 2,
+   "openAccessPdf": {
+    "url": "https://dr.ntu.edu.sg/bitstream/10356/61716/1/PhD%20Report.pdf",
+    "status": "GOLD",
+    "license": "other-oa"
+   },
+   "publicationDate": null,
+   "journal": {
+    "volume": "",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "7ed1e749d3b5586725878940726302ab05fbfc19",
+   "externalIds": {
+    "DBLP": "conf/aina/ErnstKR14",
+    "MAG": "2073860680",
+    "DOI": "10.1109/AINA.2014.36",
+    "CorpusId": 18642514
+   },
+   "url": "https://www.semanticscholar.org/paper/7ed1e749d3b5586725878940726302ab05fbfc19",
+   "title": "A Wi-Fi Simulation Model Which Supports Channel Scanning across Multiple Non-overlapping Channels in NS3",
+   "venue": "2014 IEEE 28th International Conference on Advanced Information Networking and Applications",
+   "year": 2014,
+   "citationCount": 7,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2014-05-13",
+   "journal": {
+    "pages": "268-275",
+    "name": "2014 IEEE 28th International Conference on Advanced Information Networking and Applications"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2492622",
+     "name": "S. C. Kremer"
+    },
+    {
+     "authorId": "144091143",
+     "name": "J. Rodrigues"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "7fe3700ee1b00cbeee3efed2245dd01afc19ea61",
+   "externalIds": {
+    "DBLP": "conf/ccece/LawniczakES14",
+    "MAG": "2030277214",
+    "DOI": "10.1109/CCECE.2014.6901131",
+    "CorpusId": 17459116
+   },
+   "url": "https://www.semanticscholar.org/paper/7fe3700ee1b00cbeee3efed2245dd01afc19ea61",
+   "title": "Improved performance of na\u00efve creature learning to cross a highway",
+   "venue": "Canadian Conference on Electrical and Computer Engineering",
+   "year": 2014,
+   "citationCount": 2,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2014-05-04",
+   "journal": {
+    "pages": "1-6",
+    "name": "2014 IEEE 27th Canadian Conference on Electrical and Computer Engineering (CCECE)"
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "87ba302b6de65867ed9c57cbf30a8905af9c678d",
+   "externalIds": {
+    "DBLP": "conf/ccece/LawniczakES14a",
+    "MAG": "2030970203",
+    "DOI": "10.1109/CCECE.2014.6901130",
+    "CorpusId": 2550194
+   },
+   "url": "https://www.semanticscholar.org/paper/87ba302b6de65867ed9c57cbf30a8905af9c678d",
+   "title": "Biomimicri based cognitive agent and its simulator",
+   "venue": "Canadian Conference on Electrical and Computer Engineering",
+   "year": 2014,
+   "citationCount": 0,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2014-05-04",
+   "journal": {
+    "pages": "1-7",
+    "name": "2014 IEEE 27th Canadian Conference on Electrical and Computer Engineering (CCECE)"
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "b8b3ac9cfe40ace023ad1aebe605d44e47715bfa",
+   "externalIds": {
+    "MAG": "2011492325",
+    "DBLP": "journals/phycomm/ErnstKR14",
+    "DOI": "10.1016/j.phycom.2014.04.009",
+    "CorpusId": 27746986
+   },
+   "url": "https://www.semanticscholar.org/paper/b8b3ac9cfe40ace023ad1aebe605d44e47715bfa",
+   "title": "A survey of QoS/QoE mechanisms in heterogeneous wireless networks",
+   "venue": "Physical Communication",
+   "year": 2014,
+   "citationCount": 40,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2014-12-01",
+   "journal": {
+    "volume": "13",
+    "pages": "61-72",
+    "name": "Phys. Commun."
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2492622",
+     "name": "S. C. Kremer"
+    },
+    {
+     "authorId": "144091143",
+     "name": "J. Rodrigues"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "bb31a0ebd85820f3fee8cf56d49bace175a2e25f",
+   "externalIds": {
+    "MAG": "2294552475",
+    "DBLP": "conf/acri/LawniczakSE14",
+    "DOI": "10.1007/978-3-319-11520-7_73",
+    "CorpusId": 28081403
+   },
+   "url": "https://www.semanticscholar.org/paper/bb31a0ebd85820f3fee8cf56d49bace175a2e25f",
+   "title": "Software Implementation of Population of Cognitive Agents Learning to Cross a Highway",
+   "venue": "International Conference on Cellular Automata for Research and Industry",
+   "year": 2014,
+   "citationCount": 12,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2014-09-22",
+   "journal": {
+    "pages": "688-697"
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "d1cd943a9bf1713f1ede130659e80e83d49ac8af",
+   "externalIds": {
+    "MAG": "1990547607",
+    "DBLP": "conf/iccS/LawniczakES14",
+    "DOI": "10.1016/j.procs.2014.05.031",
+    "CorpusId": 34525228
+   },
+   "url": "https://www.semanticscholar.org/paper/d1cd943a9bf1713f1ede130659e80e83d49ac8af",
+   "title": "Na\u00efve Creature with Fear and Desire Learning to Cross a Highway",
+   "venue": "International Conference on Conceptual Structures",
+   "year": 2014,
+   "citationCount": 2,
+   "openAccessPdf": {
+    "url": "https://doi.org/10.1016/j.procs.2014.05.031",
+    "status": "GOLD",
+    "license": "CCBYNCND"
+   },
+   "publicationDate": null,
+   "journal": {
+    "pages": "343-353"
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    }
+   ],
+   "abstract": "We describe a model of simple cognitive agent (naive creature) learning to cross a highway. The naive creature may exper"
+  },
+  {
+   "paperId": "f2b2d610b8d1dab5c05e1889c612a506c35efb7f",
+   "externalIds": {
+    "MAG": "2516568849",
+    "CorpusId": 64406144
+   },
+   "url": "https://www.semanticscholar.org/paper/f2b2d610b8d1dab5c05e1889c612a506c35efb7f",
+   "title": "Intelligent and Adaptive Systems: Machine Learning",
+   "venue": "",
+   "year": 2014,
+   "citationCount": 0,
+   "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "volume": "",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "1794024",
+     "name": "F. Highland"
+    },
+    {
+     "authorId": "2835050",
+     "name": "V. Ireland"
+    },
+    {
+     "authorId": "2115428659",
+     "name": "Lockheed Martin"
+    },
+    {
+     "authorId": "3243623",
+     "name": "S. McGee"
+    },
+    {
+     "authorId": "39577292",
+     "name": "R. Edson"
+    },
+    {
+     "authorId": "98113708",
+     "name": "Gennaro J. Avvento"
+    },
+    {
+     "authorId": "2251929",
+     "name": "M. Richman"
+    },
+    {
+     "authorId": "2059915836",
+     "name": "J. Dyer"
+    },
+    {
+     "authorId": "2157635963",
+     "name": "Rajan Gupta"
+    },
+    {
+     "authorId": "10117414",
+     "name": "L. Leslie"
+    },
+    {
+     "authorId": "2123929",
+     "name": "A. Ozbayoglu"
+    },
+    {
+     "authorId": "1957811",
+     "name": "B. L. Sadigh"
+    },
+    {
+     "authorId": "2000754828",
+     "name": "F. Arikan"
+    },
+    {
+     "authorId": "2123929",
+     "name": "A. Ozbayoglu"
+    },
+    {
+     "authorId": "39226935",
+     "name": "H. O. Unver"
+    },
+    {
+     "authorId": "89254931",
+     "name": "E. Kili\u00e7"
+    },
+    {
+     "authorId": "2069918539",
+     "name": "M. Toy"
+    },
+    {
+     "authorId": "1402639836",
+     "name": "Fatemah Al-Duoli"
+    },
+    {
+     "authorId": "3216897",
+     "name": "G. Rabadi"
+    },
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    },
+    {
+     "authorId": "2252828",
+     "name": "K. Giammarco"
+    },
+    {
+     "authorId": "3329549",
+     "name": "Divya Vohra Behl"
+    },
+    {
+     "authorId": "153165879",
+     "name": "Brian J. Phillips"
+    },
+    {
+     "authorId": "120265252",
+     "name": "Mark R. Blackburn"
+    },
+    {
+     "authorId": "1612927143",
+     "name": "M. Phoenix"
+    },
+    {
+     "authorId": "1746960",
+     "name": "M. Auguston"
+    },
+    {
+     "authorId": "144289834",
+     "name": "W. C. Baldwin"
+    },
+    {
+     "authorId": "1405364263",
+     "name": "M. Farah-Stapleton"
+    },
+    {
+     "authorId": "123039873",
+     "name": "M. Ndiaye"
+    },
+    {
+     "authorId": "95785972",
+     "name": "A. Jefferson"
+    },
+    {
+     "authorId": "2054920295",
+     "name": "Anthony Joseph"
+    },
+    {
+     "authorId": "2453587",
+     "name": "Maurice Larrain"
+    },
+    {
+     "authorId": "39992338",
+     "name": "Claude Turner"
+    },
+    {
+     "authorId": "2932893",
+     "name": "A. Demiriz"
+    },
+    {
+     "authorId": "144735677",
+     "name": "H. Nair"
+    },
+    {
+     "authorId": "2119320290",
+     "name": "Anand Kumar"
+    },
+    {
+     "authorId": "143718842",
+     "name": "O. Ahmed"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "49aee9244a703333689a63402e51e341a46bcb22",
+   "externalIds": {
+    "MAG": "2067611277",
+    "DBLP": "conf/iccS/LawniczakES13",
+    "DOI": "10.1016/j.procs.2013.05.452",
+    "CorpusId": 42227616
+   },
+   "url": "https://www.semanticscholar.org/paper/49aee9244a703333689a63402e51e341a46bcb22",
+   "title": "Simulated Na\u00efve Creature Crossing a Highway",
+   "venue": "International Conference on Conceptual Structures",
+   "year": 2013,
+   "citationCount": 17,
+   "openAccessPdf": {
+    "url": "https://www.sciencedirect.com/science/article/pii/S1877050913005954/pdf",
+    "status": "GOLD",
+    "license": "CCBYNCND"
+   },
+   "publicationDate": null,
+   "journal": {
+    "pages": "2611-2614"
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    }
+   ],
+   "abstract": "We present a simple cognitive agent, a \u201cSimulated Naive Creature\u201d, capable of evaluating if a strategy has been applied "
+  },
+  {
+   "paperId": "52b91cb485f95ff6a5668cf51f2993292db49172",
+   "externalIds": {
+    "MAG": "2165591146",
+    "DBLP": "journals/ijssc/ErnstB13",
+    "DOI": "10.1504/IJSSC.2013.051984",
+    "CorpusId": 8018368
+   },
+   "url": "https://www.semanticscholar.org/paper/52b91cb485f95ff6a5668cf51f2993292db49172",
+   "title": "Performance evaluation of mixed-bias scheduling schemes for wireless mesh networks",
+   "venue": "International Journal of Space-Based and Situated Computing",
+   "year": 2013,
+   "citationCount": 15,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2013-02-11",
+   "journal": {
+    "volume": "3",
+    "pages": "22-34",
+    "name": "Int. J. Space Based Situated Comput."
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2116698727",
+     "name": "J. A. Brown"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "79ad62fb76082605b763e41f9419d56719e68d34",
+   "externalIds": {
+    "MAG": "87566678",
+    "DOI": "10.1016/B978-0-12-415844-3.00014-0",
+    "CorpusId": 59837944
+   },
+   "url": "https://www.semanticscholar.org/paper/79ad62fb76082605b763e41f9419d56719e68d34",
+   "title": "Chapter 14 \u2013 Energy-Efficient Next-Generation Wireless Communications",
+   "venue": "",
+   "year": 2013,
+   "citationCount": 2,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "volume": "",
+    "pages": "371-392",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "0cb2c8adf34715ed9a3ad8d4014cca7ce0f11769",
+   "externalIds": {
+    "DBLP": "conf/aina/ErnstB12",
+    "MAG": "2134584916",
+    "DOI": "10.1109/WAINA.2012.215",
+    "CorpusId": 11606979
+   },
+   "url": "https://www.semanticscholar.org/paper/0cb2c8adf34715ed9a3ad8d4014cca7ce0f11769",
+   "title": "Co-existence of Evolutionary Mixed-Bias Scheduling with Quiescence and IEEE 802.11 DCF for Wireless Mesh Networks",
+   "venue": "2012 26th International Conference on Advanced Information Networking and Applications Workshops",
+   "year": 2012,
+   "citationCount": 2,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2012-03-01",
+   "journal": {
+    "pages": "678-683",
+    "name": "2012 26th International Conference on Advanced Information Networking and Applications Workshops"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2116698727",
+     "name": "J. A. Brown"
+    }
+   ],
+   "abstract": "The evolutionary programming mixed bias scheduling has been shown to provide significantly reduced end-to-end delay whil"
+  },
+  {
+   "paperId": "a8b6d0de9ffddb8104d040ca925ef8547934da08",
+   "externalIds": {
+    "DBLP": "conf/icc/ErnstNR12",
+    "MAG": "2094391577",
+    "DOI": "10.1109/ICC.2012.6364654",
+    "CorpusId": 14700286
+   },
+   "url": "https://www.semanticscholar.org/paper/a8b6d0de9ffddb8104d040ca925ef8547934da08",
+   "title": "Co-channel interference modelling between RATs in heterogeneous wireless networks",
+   "venue": "2012 IEEE International Conference on Communications (ICC)",
+   "year": 2012,
+   "citationCount": 9,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2012-06-10",
+   "journal": {
+    "pages": "5321-5325",
+    "name": "2012 IEEE International Conference on Communications (ICC)"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "143999752",
+     "name": "N. Nasser"
+    },
+    {
+     "authorId": "144091143",
+     "name": "J. Rodrigues"
+    }
+   ],
+   "abstract": null
+  }
+ ]
+}

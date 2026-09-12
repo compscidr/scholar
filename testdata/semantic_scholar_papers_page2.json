@@ -1,0 +1,1074 @@
+{
+ "offset": 30,
+ "data": [
+  {
+   "paperId": "aa82151e09d38abb7c00bfaa3da88919d044ce60",
+   "externalIds": {
+    "MAG": "216799350",
+    "DBLP": "conf/acri/LawniczakES12",
+    "DOI": "10.1007/978-3-642-33350-7_44",
+    "CorpusId": 30518277
+   },
+   "url": "https://www.semanticscholar.org/paper/aa82151e09d38abb7c00bfaa3da88919d044ce60",
+   "title": "Creature Learning to Cross a CA Simulated Road",
+   "venue": "International Conference on Cellular Automata for Research and Industry",
+   "year": 2012,
+   "citationCount": 19,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2012-09-24",
+   "journal": {
+    "pages": "425-433"
+   },
+   "authors": [
+    {
+     "authorId": "1774400",
+     "name": "A. Lawniczak"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "7705781",
+     "name": "B. D. Stefano"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "123d13c39ea6e45fb7374181dd8a5ddbff8144f3",
+   "externalIds": {
+    "MAG": "2033708275",
+    "DBLP": "conf/bwcca/ErnstB11",
+    "DOI": "10.1109/BWCCA.2011.83",
+    "CorpusId": 11579388
+   },
+   "url": "https://www.semanticscholar.org/paper/123d13c39ea6e45fb7374181dd8a5ddbff8144f3",
+   "title": "An Online Evolutionary Programming Method for Parameters of Wireless Networks",
+   "venue": "2011 International Conference on Broadband and Wireless Computing, Communication and Applications",
+   "year": 2011,
+   "citationCount": 5,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2011-10-01",
+   "journal": {
+    "pages": "515-520",
+    "name": "2011 International Conference on Broadband and Wireless Computing, Communication and Applications"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2116698727",
+     "name": "J. A. Brown"
+    }
+   ],
+   "abstract": "Wireless networks operate in rapidly changing environments. Often parameters for particular algorithms are set with part"
+  },
+  {
+   "paperId": "39e38f81dc60237d1988b702a915f5904e87ec31",
+   "externalIds": {
+    "MAG": "1543996955",
+    "DOI": "10.1002/9781119970422.CH14",
+    "CorpusId": 61076781
+   },
+   "url": "https://www.semanticscholar.org/paper/39e38f81dc60237d1988b702a915f5904e87ec31",
+   "title": "Autonomic and Pervasive Networking",
+   "venue": "",
+   "year": 2011,
+   "citationCount": 4,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2011-06-06",
+   "journal": {
+    "volume": "",
+    "pages": "219-236",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "1859733",
+     "name": "Thabo K. R. Nkwe"
+    },
+    {
+     "authorId": "1749167",
+     "name": "M. Denko"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "a4b4093d1d437aa9b9534c0301c62fb7d87b7d55",
+   "externalIds": {
+    "CorpusId": 260979295
+   },
+   "url": "https://www.semanticscholar.org/paper/a4b4093d1d437aa9b9534c0301c62fb7d87b7d55",
+   "title": "Identification of Functional Elements and Regulatory Circuits by Drosophila modENCODE",
+   "venue": "",
+   "year": 2011,
+   "citationCount": 71,
+   "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": null,
+   "authors": [
+    {
+     "authorId": "2246836705",
+     "name": "Sushmita Roy"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "2841161",
+     "name": "P. Kharchenko"
+    },
+    {
+     "authorId": "1957116",
+     "name": "P. Kheradpour"
+    },
+    {
+     "authorId": "2269417",
+     "name": "N. Negre"
+    },
+    {
+     "authorId": "2148130",
+     "name": "M. Eaton"
+    },
+    {
+     "authorId": "50284450",
+     "name": "J. Landolin"
+    },
+    {
+     "authorId": "2246424441",
+     "name": "Christopher A. Bristow"
+    },
+    {
+     "authorId": "2246674905",
+     "name": "Lijia Ma"
+    },
+    {
+     "authorId": "34589566",
+     "name": "Michael F. Lin"
+    },
+    {
+     "authorId": "2192601",
+     "name": "Stefan Washietl"
+    },
+    {
+     "authorId": "2264820958",
+     "name": "I. Bradley"
+    },
+    {
+     "authorId": "2246423814",
+     "name": "Arshinoff"
+    },
+    {
+     "authorId": "3143378",
+     "name": "F. Ay"
+    },
+    {
+     "authorId": "2246425466",
+     "name": "Patrick E. Meyer"
+    },
+    {
+     "authorId": "2687232",
+     "name": "N. Robine"
+    },
+    {
+     "authorId": "2321599969",
+     "name": "L. Nicol\u00e9"
+    },
+    {
+     "authorId": "2059740203",
+     "name": "Washington"
+    },
+    {
+     "authorId": "2246419291",
+     "name": "Luisa Di Stefano"
+    },
+    {
+     "authorId": "2466627",
+     "name": "Eugene Berezikov"
+    },
+    {
+     "authorId": "2247113209",
+     "name": "Christopher D. Brown"
+    },
+    {
+     "authorId": "39196301",
+     "name": "Rogerio Candeias"
+    },
+    {
+     "authorId": "47169795",
+     "name": "J. Carlson"
+    },
+    {
+     "authorId": "2056600418",
+     "name": "A. Carr"
+    },
+    {
+     "authorId": "2087597",
+     "name": "Irwin Jungreis"
+    },
+    {
+     "authorId": "2072119773",
+     "name": "Daniel"
+    },
+    {
+     "authorId": "2246425175",
+     "name": "Marbach"
+    },
+    {
+     "authorId": "2523083",
+     "name": "Rachel S. G. Sealfon"
+    },
+    {
+     "authorId": "2616793",
+     "name": "M. Tolstorukov"
+    },
+    {
+     "authorId": "2246419578",
+     "name": "Sebastian Will"
+    },
+    {
+     "authorId": "1605226750",
+     "name": "A. Artyom"
+    },
+    {
+     "authorId": "2246428319",
+     "name": "Alekseyenko"
+    },
+    {
+     "authorId": "5545392",
+     "name": "C. Artieri"
+    },
+    {
+     "authorId": "5860869",
+     "name": "Benjamin W. Booth"
+    },
+    {
+     "authorId": "144329336",
+     "name": "Angela N. Brooks"
+    },
+    {
+     "authorId": "2429607",
+     "name": "Q. Dai"
+    },
+    {
+     "authorId": "2306729021",
+     "name": "A. Carri\u00e9"
+    },
+    {
+     "authorId": "2054045359",
+     "name": "Davis"
+    },
+    {
+     "authorId": "47191491",
+     "name": "M. Duff"
+    },
+    {
+     "authorId": "2246867334",
+     "name": "Xin Feng"
+    },
+    {
+     "authorId": "3000329",
+     "name": "A. Gorchakov"
+    },
+    {
+     "authorId": "2246424368",
+     "name": "Tingting Gu"
+    },
+    {
+     "authorId": "2246423333",
+     "name": "G. Jorja"
+    },
+    {
+     "authorId": "95276152",
+     "name": "Henikoff"
+    },
+    {
+     "authorId": "2923778",
+     "name": "P. Kapranov"
+    },
+    {
+     "authorId": "2246779393",
+     "name": "Renhua Li"
+    },
+    {
+     "authorId": "6380562",
+     "name": "Heather K Macalpine"
+    },
+    {
+     "authorId": "2246423922",
+     "name": "John H Malone"
+    },
+    {
+     "authorId": "2250459013",
+     "name": "Aki"
+    },
+    {
+     "authorId": "2246424355",
+     "name": "Minoda"
+    },
+    {
+     "authorId": "40394932",
+     "name": "Jared T. Nordman"
+    },
+    {
+     "authorId": "3738262",
+     "name": "K. Okamura"
+    },
+    {
+     "authorId": "49968772",
+     "name": "M. Perry"
+    },
+    {
+     "authorId": "34836224",
+     "name": "S. Powell"
+    },
+    {
+     "authorId": "2246422766",
+     "name": "C. Nicole"
+    },
+    {
+     "authorId": "50366464",
+     "name": "Riddle"
+    },
+    {
+     "authorId": "2246423780",
+     "name": "Akiko Sakai"
+    },
+    {
+     "authorId": "10265168",
+     "name": "A. Samsonova"
+    },
+    {
+     "authorId": "33454434",
+     "name": "Jeremy E. Sandler"
+    },
+    {
+     "authorId": "6002096",
+     "name": "Y. Schwartz"
+    },
+    {
+     "authorId": "47063769",
+     "name": "Noa Sher"
+    },
+    {
+     "authorId": "5360572",
+     "name": "Rebecca Spokony"
+    },
+    {
+     "authorId": "5262367",
+     "name": "David Sturgill"
+    },
+    {
+     "authorId": "5450960",
+     "name": "M. Baren"
+    },
+    {
+     "authorId": "3755608",
+     "name": "K. Wan"
+    },
+    {
+     "authorId": "2146703853",
+     "name": "Li"
+    },
+    {
+     "authorId": "2345340268",
+     "name": "Yang"
+    },
+    {
+     "authorId": "11731203",
+     "name": "Charles Yu"
+    },
+    {
+     "authorId": "47664636",
+     "name": "E. Feingold"
+    },
+    {
+     "authorId": "2246420485",
+     "name": "Peter J. Good"
+    },
+    {
+     "authorId": "152165921",
+     "name": "M. Guyer"
+    },
+    {
+     "authorId": "2714695",
+     "name": "Rebecca F. Lowdon"
+    },
+    {
+     "authorId": "144852599",
+     "name": "K. Ahmad"
+    },
+    {
+     "authorId": "38971271",
+     "name": "Justen Andrews"
+    },
+    {
+     "authorId": "2246428836",
+     "name": "Bonnie Berger"
+    },
+    {
+     "authorId": "3329398",
+     "name": "S. Brenner"
+    },
+    {
+     "authorId": "147938989",
+     "name": "R. Michael"
+    },
+    {
+     "authorId": "2248417364",
+     "name": "Brent"
+    },
+    {
+     "authorId": "4089935",
+     "name": "L. Cherbas"
+    },
+    {
+     "authorId": "4711288",
+     "name": "S. Elgin"
+    },
+    {
+     "authorId": "1983716",
+     "name": "T. Gingeras"
+    },
+    {
+     "authorId": "2056598592",
+     "name": "Robert"
+    },
+    {
+     "authorId": "2246424463",
+     "name": "Grossman"
+    },
+    {
+     "authorId": "3596127",
+     "name": "R. Hoskins"
+    },
+    {
+     "authorId": "5873175",
+     "name": "T. Kaufman"
+    },
+    {
+     "authorId": "2246424923",
+     "name": "W. Kent"
+    },
+    {
+     "authorId": "32231833",
+     "name": "M. Kuroda"
+    },
+    {
+     "authorId": "1401831361",
+     "name": "T. Orr-Weaver"
+    },
+    {
+     "authorId": "2238455631",
+     "name": "Norbert Perrimon"
+    },
+    {
+     "authorId": "7016075",
+     "name": "V. Pirrotta"
+    },
+    {
+     "authorId": "4130574",
+     "name": "J. Posakony"
+    },
+    {
+     "authorId": "2277769042",
+     "name": "Bing"
+    },
+    {
+     "authorId": "2057916497",
+     "name": "Ren"
+    },
+    {
+     "authorId": "2246428008",
+     "name": "Steven Russell"
+    },
+    {
+     "authorId": "3568616",
+     "name": "P. Cherbas"
+    },
+    {
+     "authorId": "4245013",
+     "name": "Brenton R. Graveley"
+    },
+    {
+     "authorId": "2292966334",
+     "name": "S. Lewis"
+    },
+    {
+     "authorId": "118660372",
+     "name": "Gos"
+    },
+    {
+     "authorId": "2102541027",
+     "name": "Micklem"
+    },
+    {
+     "authorId": "145930374",
+     "name": "B. Oliver"
+    },
+    {
+     "authorId": "2244146494",
+     "name": "P. J. Park"
+    },
+    {
+     "authorId": "91745761",
+     "name": "S. Celniker"
+    },
+    {
+     "authorId": "2494675",
+     "name": "S. Henikoff"
+    },
+    {
+     "authorId": "2084013515",
+     "name": "Gary"
+    },
+    {
+     "authorId": "13352337",
+     "name": "H. Karpen"
+    },
+    {
+     "authorId": "1778962",
+     "name": "E. Lai"
+    },
+    {
+     "authorId": "4465420",
+     "name": "David M. MacAlpine"
+    },
+    {
+     "authorId": "2246425161",
+     "name": "Lincoln D. Stein"
+    },
+    {
+     "authorId": "2260093089",
+     "name": "P. Kevin"
+    },
+    {
+     "authorId": "2240301225",
+     "name": "White"
+    },
+    {
+     "authorId": "2809250",
+     "name": "Manolis Kellis"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "ac0bf4f9467cb458933048edd6f493e145599847",
+   "externalIds": {
+    "DBLP": "journals/jcss/ErnstD11",
+    "MAG": "1974421059",
+    "DOI": "10.1016/j.jcss.2010.02.006",
+    "CorpusId": 43916206
+   },
+   "url": "https://www.semanticscholar.org/paper/ac0bf4f9467cb458933048edd6f493e145599847",
+   "title": "The design and evaluation of fair scheduling in wireless mesh networks",
+   "venue": "Journal of computer and system sciences (Print)",
+   "year": 2011,
+   "citationCount": 24,
+   "openAccessPdf": {
+    "url": "https://doi.org/10.1016/j.jcss.2010.02.006",
+    "status": "HYBRID",
+    "license": "elsevier-specific: oa user license"
+   },
+   "publicationDate": "2011-07-01",
+   "journal": {
+    "volume": "77",
+    "pages": "652-664",
+    "name": "J. Comput. Syst. Sci."
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "1749167",
+     "name": "M. Denko"
+    }
+   ],
+   "abstract": "In this paper we address the problem of scheduling in wireless mesh networks. First, we provide a comparison of existing"
+  },
+  {
+   "paperId": "3282a9e28d003907400e5a5bd65b0e0ec2c96777",
+   "externalIds": {
+    "MAG": "2077026063",
+    "DOI": "10.1101/gr.096305.109",
+    "CorpusId": 262512912,
+    "PubMed": "20219943"
+   },
+   "url": "https://www.semanticscholar.org/paper/3282a9e28d003907400e5a5bd65b0e0ec2c96777",
+   "title": "Integrating multiple evidence sources to predict transcription factor binding in the human genome.",
+   "venue": "Genome Research",
+   "year": 2010,
+   "citationCount": 114,
+   "openAccessPdf": {
+    "url": "https://genome.cshlp.org/content/20/4/526.full.pdf",
+    "status": "HYBRID",
+    "license": "CCBYNC"
+   },
+   "publicationDate": "2010-04-01",
+   "journal": {
+    "volume": "20 4",
+    "pages": "\n          526-36\n        ",
+    "name": "Genome research"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "4861042",
+     "name": "Heather L. Plasterer"
+    },
+    {
+     "authorId": "34775673",
+     "name": "I. Simon"
+    },
+    {
+     "authorId": "1397939637",
+     "name": "Z. Bar-joseph"
+    }
+   ],
+   "abstract": "Information about the binding preferences of many transcription factors is known and characterized by a sequence binding"
+  },
+  {
+   "paperId": "4ed091ef015d91ccb0c4238f51f72019976434e5",
+   "externalIds": {
+    "MAG": "1971938370",
+    "DBLP": "journals/jaihc/NkweDE10",
+    "DOI": "10.1007/s12652-009-0001-7",
+    "CorpusId": 2990429
+   },
+   "url": "https://www.semanticscholar.org/paper/4ed091ef015d91ccb0c4238f51f72019976434e5",
+   "title": "Data ubiquity in autonomic wireless mesh networks",
+   "venue": "Journal of Ambient Intelligence and Humanized Computing",
+   "year": 2010,
+   "citationCount": 6,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2010-03-01",
+   "journal": {
+    "volume": "1",
+    "pages": "3-13",
+    "name": "Journal of Ambient Intelligence and Humanized Computing"
+   },
+   "authors": [
+    {
+     "authorId": "1859733",
+     "name": "Thabo K. R. Nkwe"
+    },
+    {
+     "authorId": "1749167",
+     "name": "M. Denko"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "82661414bd5bedad8d310784a2dd60954f017f3d",
+   "externalIds": {
+    "DBLP": "conf/icc/ErnstD10",
+    "MAG": "1981307456",
+    "DOI": "10.1109/ICC.2010.5502372",
+    "CorpusId": 14507957
+   },
+   "url": "https://www.semanticscholar.org/paper/82661414bd5bedad8d310784a2dd60954f017f3d",
+   "title": "Cross-Layer Mixed Bias Scheduling for Wireless Mesh Networks",
+   "venue": "IEEE International Conference on Communications",
+   "year": 2010,
+   "citationCount": 7,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2010-05-23",
+   "journal": {
+    "pages": "1-5",
+    "name": "2010 IEEE International Conference on Communications"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "1749167",
+     "name": "M. Denko"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "be7e3106db1f7cfcf1e0269a274676c103d3fb5d",
+   "externalIds": {
+    "DBLP": "conf/bwcca/ErnstN10",
+    "MAG": "1982683119",
+    "DOI": "10.1109/BWCCA.2010.144",
+    "CorpusId": 17273000
+   },
+   "url": "https://www.semanticscholar.org/paper/be7e3106db1f7cfcf1e0269a274676c103d3fb5d",
+   "title": "Adaptive Mixed Bias Resource Allocation for Wireless Mesh Networks",
+   "venue": "2010 International Conference on Broadband, Wireless Computing, Communication and Applications",
+   "year": 2010,
+   "citationCount": 4,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2010-11-04",
+   "journal": {
+    "pages": "622-626",
+    "name": "2010 International Conference on Broadband, Wireless Computing, Communication and Applications"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "1859733",
+     "name": "Thabo K. R. Nkwe"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "d573372a5b319ac4651bc12113649092782b91a0",
+   "externalIds": {
+    "MAG": "2185345601",
+    "CorpusId": 261928800
+   },
+   "url": "https://www.semanticscholar.org/paper/d573372a5b319ac4651bc12113649092782b91a0",
+   "title": "Radio Resource Management in Heterogeneous Wireless Networks",
+   "venue": "",
+   "year": 2010,
+   "citationCount": 0,
+   "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "volume": "",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "0e413aadac30e1fe2087b6bd629a4f0bdcfc5ec0",
+   "externalIds": {
+    "CorpusId": 12997311
+   },
+   "url": "https://www.semanticscholar.org/paper/0e413aadac30e1fe2087b6bd629a4f0bdcfc5ec0",
+   "title": "TECHNIQUES FOR WIRELESS MESH NETWORKS",
+   "venue": "",
+   "year": 2009,
+   "citationCount": 0,
+   "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": null,
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "6e095e4f02403f1ba1d38f7dc081b8cef17c5b07",
+   "externalIds": {
+    "MAG": "2545304477",
+    "DOI": "10.1109/TIC-STH.2009.5444393",
+    "CorpusId": 22162411
+   },
+   "url": "https://www.semanticscholar.org/paper/6e095e4f02403f1ba1d38f7dc081b8cef17c5b07",
+   "title": "A review of cross-layer scheduling and resource allocation for wireless mesh networks",
+   "venue": "IEEE Toronto International Conference Science and Technology for Humanity",
+   "year": 2009,
+   "citationCount": 2,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2009-09-01",
+   "journal": {
+    "pages": "776-781",
+    "name": "2009 IEEE Toronto International Conference Science and Technology for Humanity (TIC-STH)"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "1749167",
+     "name": "M. Denko"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "d4578ae88beef66c238bf66ffd8af3039d2fd496",
+   "externalIds": {
+    "DBLP": "conf/aina/ErnstD09",
+    "MAG": "2112420524",
+    "DOI": "10.1109/AINA.2009.69",
+    "CorpusId": 13214591
+   },
+   "url": "https://www.semanticscholar.org/paper/d4578ae88beef66c238bf66ffd8af3039d2fd496",
+   "title": "Fair Scheduling with Multiple Gateways in Wireless Mesh Networks",
+   "venue": "International Conference on Advanced Information Networking and Applications",
+   "year": 2009,
+   "citationCount": 9,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2009-05-26",
+   "journal": {
+    "pages": "106-112",
+    "name": "2009 International Conference on Advanced Information Networking and Applications"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "1749167",
+     "name": "M. Denko"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "6d7b4f9e3bb8e6991a0d22de053f35bceba602a9",
+   "externalIds": {
+    "MAG": "22994886",
+    "DBLP": "conf/cocoa/FanHWE08",
+    "DOI": "10.1007/978-3-540-85097-7_19",
+    "CorpusId": 23728340
+   },
+   "url": "https://www.semanticscholar.org/paper/6d7b4f9e3bb8e6991a0d22de053f35bceba602a9",
+   "title": "Algorithms and Implementation for Interconnection Graph Problem",
+   "venue": "International Conference on Combinatorial Optimization and Applications",
+   "year": 2008,
+   "citationCount": 18,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2008-08-21",
+   "journal": {
+    "pages": "201-210"
+   },
+   "authors": [
+    {
+     "authorId": "2716255",
+     "name": "Hongbing Fan"
+    },
+    {
+     "authorId": "2218155",
+     "name": "Christian Rosenke"
+    },
+    {
+     "authorId": "1409789424",
+     "name": "Yu-Liang Wu"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "cf3ab7a1cd70c04bf2bdde8f0d2e090d341a0ac2",
+   "externalIds": {
+    "PubMedCentral": "2266799",
+    "DBLP": "journals/ploscb/ErnstBKBOB08",
+    "MAG": "2081468394",
+    "DOI": "10.1371/journal.pcbi.1000044",
+    "CorpusId": 263033402,
+    "PubMed": "18369434"
+   },
+   "url": "https://www.semanticscholar.org/paper/cf3ab7a1cd70c04bf2bdde8f0d2e090d341a0ac2",
+   "title": "A Semi-Supervised Method for Predicting Transcription Factor\u2013Gene Interactions in Escherichia coli",
+   "venue": "PLoS Comput. Biol.",
+   "year": 2008,
+   "citationCount": 110,
+   "openAccessPdf": {
+    "url": "https://journals.plos.org/ploscompbiol/article/file?id=10.1371/journal.pcbi.1000044&type=printable",
+    "status": "GOLD",
+    "license": "CCBY"
+   },
+   "publicationDate": "2008-03-01",
+   "journal": {
+    "volume": "4",
+    "name": "PLoS Computational Biology"
+   },
+   "authors": [
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "1777395",
+     "name": "Q. K. Beg"
+    },
+    {
+     "authorId": "31777069",
+     "name": "Krin A. Kay"
+    },
+    {
+     "authorId": "2247900591",
+     "name": "G\u00e1bor Bal\u00e1zsi"
+    },
+    {
+     "authorId": "1771506",
+     "name": "Z. Oltvai"
+    },
+    {
+     "authorId": "1397939637",
+     "name": "Z. Bar-joseph"
+    }
+   ],
+   "abstract": "While Escherichia coli has one of the most comprehensive datasets of experimentally verified transcriptional regulatory "
+  },
+  {
+   "paperId": "e0171594242ea8c9662b81dc16dc11015bedc4f2",
+   "externalIds": {
+    "DBLP": "conf/fpl/FanEW08",
+    "MAG": "2168911164",
+    "DOI": "10.1109/FPL.2008.4629991",
+    "CorpusId": 9816156
+   },
+   "url": "https://www.semanticscholar.org/paper/e0171594242ea8c9662b81dc16dc11015bedc4f2",
+   "title": "Customized Reconfigurable Interconnection Networks for multiple application SOCS",
+   "venue": "International Conference on Field-Programmable Logic and Applications",
+   "year": 2008,
+   "citationCount": 1,
+   "openAccessPdf": {
+    "url": "",
+    "status": "CLOSED",
+    "license": null
+   },
+   "publicationDate": "2008-09-23",
+   "journal": {
+    "pages": "491-494",
+    "name": "2008 International Conference on Field Programmable Logic and Applications"
+   },
+   "authors": [
+    {
+     "authorId": "2716255",
+     "name": "Hongbing Fan"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    },
+    {
+     "authorId": "1409789424",
+     "name": "Yu-Liang Wu"
+    }
+   ],
+   "abstract": null
+  },
+  {
+   "paperId": "056351d742f4fcb7a1d108ded9dfa627a1778924",
+   "externalIds": {
+    "MAG": "165199522",
+    "CorpusId": 18414407
+   },
+   "url": "https://www.semanticscholar.org/paper/056351d742f4fcb7a1d108ded9dfa627a1778924",
+   "title": "Collaborative Agents for an Integrated Battlespace",
+   "venue": "",
+   "year": 2001,
+   "citationCount": 1,
+   "openAccessPdf": {
+    "url": "",
+    "status": null,
+    "license": null
+   },
+   "publicationDate": null,
+   "journal": {
+    "volume": "",
+    "name": ""
+   },
+   "authors": [
+    {
+     "authorId": "2098667",
+     "name": "J. Dumer"
+    },
+    {
+     "authorId": "3187600",
+     "name": "T. Hanratty"
+    },
+    {
+     "authorId": "144204102",
+     "name": "John Yen"
+    },
+    {
+     "authorId": "143937023",
+     "name": "D. H. Widyantoro"
+    },
+    {
+     "authorId": "1792904",
+     "name": "Jason B. Ernst"
+    }
+   ],
+   "abstract": null
+  }
+ ]
+}

@@ -37,6 +37,42 @@ const DefaultFailureCooldown = time.Hour
 // Check with errors.Is to tell a blocked IP apart from a missing profile.
 var ErrBlocked = errors.New("blocked by Google Scholar (automated queries)")
 
+// SourceKind selects where publication data comes from.
+type SourceKind string
+
+const (
+	// SourceGoogleScholar scrapes scholar.google.com profile and article pages
+	// (the original behaviour). Google refuses many datacenter IPs; see ErrBlocked.
+	SourceGoogleScholar SourceKind = "google_scholar"
+	// SourceSemanticScholar uses the Semantic Scholar Academic Graph API. Coverage
+	// and citation counts differ from Google Scholar, but it is a real API with
+	// no IP blocking. Users are identified by their Semantic Scholar author id.
+	SourceSemanticScholar SourceKind = "semantic_scholar"
+)
+
+// source is the seam between the cache layer and a publication backend.
+type source interface {
+	// fetchProfile returns up to limit articles for user, newest listing order
+	// as the backend provides it. When details is false the backend may skip
+	// per-article lookups and return only what the listing provides.
+	fetchProfile(user string, limit int, details bool) ([]*Article, error)
+	// fetchArticle returns full details for the article identified by key
+	// (the value stored in Article.ScholarURL, which the article cache is
+	// keyed by).
+	fetchArticle(key string) (*Article, error)
+}
+
+// googleSource adapts the existing scraper to the source interface.
+type googleSource struct{ sch *Scholar }
+
+func (g googleSource) fetchProfile(user string, limit int, details bool) ([]*Article, error) {
+	return g.sch.QueryProfileDumpResponse(user, details, limit, false)
+}
+
+func (g googleSource) fetchArticle(key string) (*Article, error) {
+	return g.sch.QueryArticle(key, &Article{}, false)
+}
+
 // fetchFailure records the last failed fetch for a user.
 type fetchFailure struct {
 	at  time.Time
@@ -79,6 +115,10 @@ type Scholar struct {
 	lastRequest   time.Time     // timestamp of last request
 	requestMutex  sync.Mutex    // mutex to synchronize requests
 
+	sourceKind SourceKind // which backend the cache layer talks to
+	src        source
+	apiKey     string // optional Semantic Scholar API key
+
 	failureCooldown time.Duration           // see DefaultFailureCooldown
 	failures        map[string]fetchFailure // last failed fetch per user, cleared on success
 	failureMu       sync.Mutex
@@ -100,6 +140,7 @@ func New(profileCache string, articleCache string) *Scholar {
 		failureCooldown: DefaultFailureCooldown,
 		failures:        make(map[string]fetchFailure),
 	}
+	sch.SetSource(SourceGoogleScholar)
 
 	profileFile, err := os.Open(profileCache)
 	if err != nil {
@@ -155,6 +196,31 @@ func New(profileCache string, articleCache string) *Scholar {
 // SetHTTPClient allows setting a custom HTTP client (useful for testing)
 func (sch *Scholar) SetHTTPClient(client HTTPClient) {
 	sch.httpClient = client
+}
+
+// SetSource selects the publication backend. The default is Google Scholar.
+// Cached data is keyed by user id and article URL, so switching sources for
+// the same cache files simply results in cache misses for the new ids.
+func (sch *Scholar) SetSource(kind SourceKind) {
+	sch.sourceKind = kind
+	switch kind {
+	case SourceSemanticScholar:
+		sch.src = semanticScholarSource{sch: sch}
+	default:
+		sch.sourceKind = SourceGoogleScholar
+		sch.src = googleSource{sch: sch}
+	}
+}
+
+// Source reports the active publication backend.
+func (sch *Scholar) Source() SourceKind {
+	return sch.sourceKind
+}
+
+// SetAPIKey sets the Semantic Scholar API key sent as x-api-key. Optional;
+// without it requests share the unauthenticated rate-limit pool.
+func (sch *Scholar) SetAPIKey(key string) {
+	sch.apiKey = key
 }
 
 // SetFailureCooldown sets how long a failed fetch for a user without cached
@@ -274,7 +340,7 @@ func (a Article) String() string {
 }
 
 func (sch *Scholar) QueryProfile(user string, limit int) ([]*Article, error) {
-	return sch.QueryProfileDumpResponse(user, true, limit, false)
+	return sch.src.fetchProfile(user, limit, true)
 }
 
 // loadCachedArticles returns articles from the article cache for a given profile.
@@ -287,7 +353,7 @@ func (sch *Scholar) loadCachedArticles(profile Profile) []*Article {
 			cacheArticle := articleResult.(*Article)
 			if (time.Now().Sub(cacheArticle.LastRetrieved)).Seconds() > MAX_TIME_ARTICLE.Seconds() {
 				println("Cache expired for article: " + articleURL + "\nLast Retrieved: " + cacheArticle.LastRetrieved.String() + "\nDifference: " + time.Now().Sub(cacheArticle.LastRetrieved).String())
-				article, err := sch.QueryArticle(articleURL, &Article{}, false)
+				article, err := sch.src.fetchArticle(articleURL)
 				if err == nil {
 					sch.articles.Store(articleURL, article)
 					articles = append(articles, article)
@@ -306,7 +372,7 @@ func (sch *Scholar) loadCachedArticles(profile Profile) []*Article {
 		} else {
 			// cache miss, query the article
 			println("Cache miss for article: " + articleURL)
-			article, err := sch.QueryArticle(articleURL, &Article{}, false)
+			article, err := sch.src.fetchArticle(articleURL)
 			if err == nil {
 				articles = append(articles, article)
 				sch.articles.Store(articleURL, article)
@@ -327,7 +393,7 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 			// Only fetch the profile page (queryArticles=false) to get the
 			// updated article list. Article details are served from cache
 			// via loadCachedArticles, which refreshes only expired entries.
-			profileArticles, err := sch.QueryProfileDumpResponse(user, false, limit, false)
+			profileArticles, err := sch.src.fetchProfile(user, limit, false)
 			if err == nil {
 				var articleList []string
 				for _, article := range profileArticles {
@@ -366,12 +432,15 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 		if f, ok := sch.inFailureCooldown(user); ok {
 			return nil, fmt.Errorf("skipping fetch for %s, last attempt %s ago failed: %w", user, time.Since(f.at).Round(time.Second), f.err)
 		}
-		articles, err := sch.QueryProfileDumpResponse(user, true, limit, false)
+		articles, err := sch.src.fetchProfile(user, limit, true)
 		if err == nil {
 			sch.clearFailure(user)
 			var articleList []string
 			for _, article := range articles {
 				articleList = append(articleList, article.ScholarURL)
+				// The listing carried full details, so seed the article cache
+				// here rather than relying on the backend to have done it.
+				sch.articles.Store(article.ScholarURL, article)
 			}
 			newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}
 			sch.profile.Store(user, newProfile)

@@ -1,0 +1,44 @@
+{
+ "paperId": "d87ccdd7ac0f2a4a953cc680ed1e54c2da87f42b",
+ "externalIds": {
+  "DOI": "10.18178/ijfcc.2023.12.2.601",
+  "CorpusId": 259635627
+ },
+ "url": "https://www.semanticscholar.org/paper/d87ccdd7ac0f2a4a953cc680ed1e54c2da87f42b",
+ "title": "The Diverse Technology of MANETs: A Survey of Applications and Challenges",
+ "venue": "International Journal of Future Computer and Communication",
+ "year": 2023,
+ "citationCount": 23,
+ "openAccessPdf": {
+  "url": "https://www.ijfcc.org/vol12/601-NC03.pdf",
+  "status": "GOLD",
+  "license": "CCBY"
+ },
+ "publicationDate": "2023-06-01",
+ "journal": {
+  "name": "International Journal of Future Computer and Communication"
+ },
+ "authors": [
+  {
+   "authorId": "2831115",
+   "name": "F. Safari"
+  },
+  {
+   "authorId": "2149758772",
+   "name": "Izabela Savic"
+  },
+  {
+   "authorId": "49553388",
+   "name": "H. Kunze"
+  },
+  {
+   "authorId": "1792904",
+   "name": "Jason B. Ernst"
+  },
+  {
+   "authorId": "2222314204",
+   "name": "Daniel Gillis"
+  }
+ ],
+ "abstract": "In recent years, mobile ad hoc networks (MANETs) have shown much potential in providing wireless network solutions for a"
+}
