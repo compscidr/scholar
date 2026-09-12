@@ -398,14 +398,31 @@ func TestCacheMissFailureCooldown(t *testing.T) {
 	_, _ = sch.QueryProfileWithMemoryCache("OtherUser", 10)
 	assert.Equal(t, 2, client.Calls)
 
-	// Once the cooldown has passed, the next call tries again.
+	// Once the cooldown has passed, the next call tries again, and the
+	// expired entry is dropped (the retry below fails again, so a fresh
+	// entry replaces it; check the timestamp moved).
 	sch.failureMu.Lock()
 	f := sch.failures["SbUmSEAAAAAJ"]
-	f.at = time.Now().Add(-sch.failureCooldown - time.Minute)
+	expiredAt := time.Now().Add(-sch.failureCooldown - time.Minute)
+	f.at = expiredAt
 	sch.failures["SbUmSEAAAAAJ"] = f
 	sch.failureMu.Unlock()
 	_, _ = sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 10)
 	assert.Equal(t, 3, client.Calls, "expected a retry after the cooldown")
+	sch.failureMu.Lock()
+	assert.True(t, sch.failures["SbUmSEAAAAAJ"].at.After(expiredAt), "expired entry should have been replaced")
+	sch.failureMu.Unlock()
+
+	// Expired entries are removed when noticed, even without a new failure.
+	sch.failureMu.Lock()
+	sch.failures["OtherUser"] = fetchFailure{at: expiredAt, err: errors.New("old")}
+	sch.failureMu.Unlock()
+	_, inCooldown := sch.inFailureCooldown("OtherUser")
+	assert.False(t, inCooldown)
+	sch.failureMu.Lock()
+	_, present := sch.failures["OtherUser"]
+	sch.failureMu.Unlock()
+	assert.False(t, present, "expired entries must be deleted, not left to accumulate")
 }
 
 // A successful fetch clears any recorded failure, and the cooldown is configurable.
@@ -428,6 +445,15 @@ func TestFailureCooldownClearedOnSuccessAndConfigurable(t *testing.T) {
 	_, stillRecorded := sch.failures["SbUmSEAAAAAJ"]
 	sch.failureMu.Unlock()
 	assert.False(t, stillRecorded, "a successful fetch must clear the recorded failure")
+
+	// With the cooldown disabled, failures are not recorded at all.
+	sch.SetHTTPClient(&MockBlockedHTTPClient{})
+	_, err = sch.QueryProfileWithMemoryCache("AnotherUser", 10)
+	assert.Error(t, err)
+	sch.failureMu.Lock()
+	_, recorded := sch.failures["AnotherUser"]
+	sch.failureMu.Unlock()
+	assert.False(t, recorded, "nothing should be recorded while the cooldown is disabled")
 }
 
 // Google's block page is reported as ErrBlocked so callers can tell it apart

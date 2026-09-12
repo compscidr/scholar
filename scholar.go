@@ -160,7 +160,12 @@ func (sch *Scholar) SetHTTPClient(client HTTPClient) {
 // SetFailureCooldown sets how long a failed fetch for a user without cached
 // data suppresses further requests for that user. Zero disables the cooldown.
 func (sch *Scholar) SetFailureCooldown(d time.Duration) {
+	sch.failureMu.Lock()
+	defer sch.failureMu.Unlock()
 	sch.failureCooldown = d
+	if d <= 0 {
+		sch.failures = make(map[string]fetchFailure)
+	}
 }
 
 // SetRequestDelay allows setting a custom delay between requests for throttling
@@ -446,23 +451,33 @@ func isBlockPage(body io.Reader) bool {
 }
 
 // inFailureCooldown returns the recorded failure for user if one happened
-// less than failureCooldown ago.
+// less than failureCooldown ago. Expired entries are dropped when noticed so
+// the map only ever holds users currently in cooldown.
 func (sch *Scholar) inFailureCooldown(user string) (fetchFailure, bool) {
+	sch.failureMu.Lock()
+	defer sch.failureMu.Unlock()
 	if sch.failureCooldown <= 0 {
 		return fetchFailure{}, false
 	}
-	sch.failureMu.Lock()
-	defer sch.failureMu.Unlock()
 	f, ok := sch.failures[user]
-	if !ok || time.Since(f.at) >= sch.failureCooldown {
+	if !ok {
+		return fetchFailure{}, false
+	}
+	if time.Since(f.at) >= sch.failureCooldown {
+		delete(sch.failures, user)
 		return fetchFailure{}, false
 	}
 	return f, true
 }
 
+// recordFailure remembers a failed fetch for user; a no-op when the cooldown
+// is disabled, so nothing accumulates that would never be read.
 func (sch *Scholar) recordFailure(user string, err error) {
 	sch.failureMu.Lock()
 	defer sch.failureMu.Unlock()
+	if sch.failureCooldown <= 0 {
+		return
+	}
 	sch.failures[user] = fetchFailure{at: time.Now(), err: err}
 }
 
