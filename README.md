@@ -20,6 +20,30 @@ for _, article := range articles {
 }
 ```
 
+## Semantic Scholar source
+Google Scholar refuses requests from most cloud/datacenter IPs (see *Blocked IPs* below). As an
+alternative the library can read the same data from the
+[Semantic Scholar Academic Graph API](https://api.semanticscholar.org/api-docs/graph), which is a real
+API with no IP blocking. Coverage and citation counts differ from Google Scholar (some publications
+are missing and counts are generally lower), and users are identified by their Semantic Scholar
+**author id** (the number at the end of `https://www.semanticscholar.org/author/<name>/<id>`), not the
+Google Scholar id.
+```go
+sch := scholar.New("profiles.json", "articles.json")
+sch.SetSource(scholar.SourceSemanticScholar)
+sch.SetAPIKey(os.Getenv("S2_API_KEY")) // optional; raises the rate limit
+
+articles, err := sch.QueryProfileWithMemoryCache("1792904", 50)
+```
+Everything else — `Article` fields, the on-disk cache files, throttling and the failure cooldown —
+works the same for both sources. The default source remains Google Scholar.
+
+Request volume: a listing is one request per 100 papers and already carries full details, so a
+first fetch or a profile refresh needs no per-paper requests; new papers are seeded from the
+listing. Individual `/paper/{id}` requests happen only when a cached article has expired (30 days)
+and is being refreshed. Unauthenticated requests share a pool of roughly 100 requests per 5
+minutes, so a daily or weekly refresh is well within that; set an API key if you need more.
+
 ## Features
 Working:
 * Queries and parses a user profile by user id to get basic publication data
