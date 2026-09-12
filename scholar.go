@@ -148,7 +148,7 @@ func New(profileCache string, articleCache string) *Scholar {
 		failureCooldown: DefaultFailureCooldown,
 		failures:        make(map[string]fetchFailure),
 	}
-	sch.SetSource(SourceGoogleScholar)
+	_ = sch.SetSource(SourceGoogleScholar) // known kind, cannot fail
 
 	profileFile, err := os.Open(profileCache)
 	if err != nil {
@@ -207,17 +207,21 @@ func (sch *Scholar) SetHTTPClient(client HTTPClient) {
 }
 
 // SetSource selects the publication backend. The default is Google Scholar.
-// Cached data is keyed by user id and article URL, so switching sources for
-// the same cache files simply results in cache misses for the new ids.
-func (sch *Scholar) SetSource(kind SourceKind) {
-	sch.sourceKind = kind
+// An unknown kind is rejected and the current source left unchanged, so a
+// typo in configuration can't silently turn into scraping Google. Cached
+// data is keyed by user id and article URL, so switching sources for the
+// same cache files simply results in cache misses for the new ids.
+func (sch *Scholar) SetSource(kind SourceKind) error {
 	switch kind {
+	case SourceGoogleScholar:
+		sch.src = googleSource{sch: sch}
 	case SourceSemanticScholar:
 		sch.src = semanticScholarSource{sch: sch}
 	default:
-		sch.sourceKind = SourceGoogleScholar
-		sch.src = googleSource{sch: sch}
+		return fmt.Errorf("unknown publication source %q (want %q or %q)", kind, SourceGoogleScholar, SourceSemanticScholar)
 	}
+	sch.sourceKind = kind
+	return nil
 }
 
 // Source reports the active publication backend.

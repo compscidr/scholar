@@ -225,3 +225,16 @@ func TestSemanticScholar_RefreshSeedsNewPapersWithoutPerPaperRequests(t *testing
 		assert.NotContains(t, r.URL.Path, "/graph/v1/paper/")
 	}
 }
+
+// An unknown source kind is an error and leaves the current source in place,
+// rather than silently falling back to scraping Google.
+func TestSetSource_UnknownKindIsAnError(t *testing.T) {
+	sch := New("profiles.json", "articles.json")
+	assert.NoError(t, sch.SetSource(SourceSemanticScholar))
+	assert.Equal(t, SourceSemanticScholar, sch.Source())
+
+	err := sch.SetSource(SourceKind("semantic-scholar"))
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "semantic-scholar")
+	assert.Equal(t, SourceSemanticScholar, sch.Source(), "source must be unchanged after a rejected kind")
+}

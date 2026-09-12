@@ -1,23 +1,37 @@
 # scholar
-scholar is a WiP Go module that implements a querier and parser for Google Scholar's output. Its classes can be used 
-independently, but it can also be invoked as a command-line tool.
+scholar is a Go module that fetches an author's publications — title, authors, venue, date, citation
+count, links — from **Google Scholar** (by scraping the profile page) or from the **Semantic Scholar
+API**, and caches them in memory and on disk. Its types can be used independently, and
+`scholar-example/` is a small command-line tool built on them.
 
 This tool is inspired by [scholar.py](https://github.com/ckreibich/scholar.py)
 
 # Usage
-```
-import "github.com/compscidr/scholar"
+```go
+import scholar "github.com/compscidr/scholar"
 
 sch := scholar.New("profiles.json", "articles.json")
 
-// Optional: Configure request delay for throttling (default is 2 seconds)
+// Optional: configure the delay between requests (default is 2 seconds)
 sch.SetRequestDelay(1 * time.Second)
 
-articles := sch.QueryProfile("SbUmSEAAAAAJ", 1)
-
+// Serves from cache when fresh, refreshes when stale, falls back to stale data on failure
+articles, err := sch.QueryProfileWithMemoryCache("SbUmSEAAAAAJ", 50)
+if err != nil {
+	// nothing cached and the fetch failed; see "Blocked IPs" below
+}
 for _, article := range articles {
 	// do something with the article
 }
+
+// Persist the caches so the next process start doesn't need the network
+sch.SaveCache("profiles.json", "articles.json")
+```
+`QueryProfile` fetches without consulting the cache. The command-line tool:
+```bash
+cd scholar-example && go build
+./scholar-example -user SbUmSEAAAAAJ -limit 10
+./scholar-example -source semantic_scholar -user 1792904 -limit 10
 ```
 
 ## Semantic Scholar source
@@ -30,7 +44,9 @@ are missing and counts are generally lower), and users are identified by their S
 Google Scholar id.
 ```go
 sch := scholar.New("profiles.json", "articles.json")
-sch.SetSource(scholar.SourceSemanticScholar)
+if err := sch.SetSource(scholar.SourceSemanticScholar); err != nil { // rejects unknown kinds
+	return err
+}
 sch.SetAPIKey(os.Getenv("S2_API_KEY")) // optional; raises the rate limit
 
 articles, err := sch.QueryProfileWithMemoryCache("1792904", 50)
@@ -45,19 +61,25 @@ and is being refreshed. Unauthenticated requests share a pool of roughly 100 req
 minutes, so a daily or weekly refresh is well within that; set an API key if you need more.
 
 ## Features
-Working:
-* Queries and parses a user profile by user id to get basic publication data
-* Queries each of the articles listed (up to 80) and parses the results for extra information
-* Caches the profile for a day, and articles for a week (need to confirm this is working)
-  * This is in memory, so if the program is restarted, the cache is lost
-* Configurable limit to number of articles to query in one go
-* On-disk caching of the profile and articles to avoid hitting the rate limit
-* **Rate limiting and throttling with configurable delays between requests**
-* **Automatic retry with exponential backoff for 429 (Too Many Requests) responses**
+* Two publication sources behind one API: Google Scholar (profile page scraping, the default) and
+  the Semantic Scholar Academic Graph API
+* Google Scholar: parses the profile page for the listing, then each article page for details
+  (paginated, configurable limit)
+* Semantic Scholar: one paginated API request per 100 papers, details included
+* In-memory cache — profiles for 7 days, articles for 30 days — with stale data served when a
+  refresh fails
+* On-disk cache files written by `SaveCache` and loaded by `New` when present, so a restart can
+  serve from cache instead of the network
+* Throttling with a configurable delay between requests, and exponential-backoff retry on 429
+* `ErrBlocked` for Google's "automated queries" 403, and a per-user failure cooldown so an
+  empty-cache consumer doesn't retry on every call
 
 ## Testing
 
-The module includes both mocked tests (fast, no network) and optional integration tests (against real Google Scholar API).
+The module includes mocked tests (fast, no network) and optional integration tests against the real
+Google Scholar site. Google Scholar tests use the recorded `sample_author_page.html` /
+`sample_article_page.html`; Semantic Scholar tests use JSON responses recorded from the real API in
+`testdata/` (author 1792904, 47 papers, split into two pages to exercise pagination).
 
 ### Running Tests
 
@@ -76,9 +98,6 @@ go test -tags integration
 ```
 
 The integration tests are designed to be optional - they test against the real Google Scholar API but gracefully handle network failures and rate limits. This allows developers to verify functionality against the live API when needed without breaking automated builds.
-
-## TODO:
-* Pagination of articles
 
 ## Rate Limiting
 The library automatically throttles requests to avoid hitting Google Scholar's rate limits:
