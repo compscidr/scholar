@@ -44,7 +44,9 @@ are missing and counts are generally lower), and users are identified by their S
 Google Scholar id.
 ```go
 sch := scholar.New("profiles.json", "articles.json")
-sch.SetSource(scholar.SourceSemanticScholar)
+if err := sch.SetSource(scholar.SourceSemanticScholar); err != nil { // rejects unknown kinds
+	return err
+}
 sch.SetAPIKey(os.Getenv("S2_API_KEY")) // optional; raises the rate limit
 
 articles, err := sch.QueryProfileWithMemoryCache("1792904", 50)
@@ -66,7 +68,8 @@ minutes, so a daily or weekly refresh is well within that; set an API key if you
 * Semantic Scholar: one paginated API request per 100 papers, details included
 * In-memory cache — profiles for 7 days, articles for 30 days — with stale data served when a
   refresh fails
-* On-disk cache files (`SaveCache`) loaded on `New`, so a restart doesn't need the network
+* On-disk cache files written by `SaveCache` and loaded by `New` when present, so a restart can
+  serve from cache instead of the network
 * Throttling with a configurable delay between requests, and exponential-backoff retry on 429
 * `ErrBlocked` for Google's "automated queries" 403, and a per-user failure cooldown so an
   empty-cache consumer doesn't retry on every call

@@ -26,7 +26,11 @@ func main() {
 	limit := *limitPtr
 
 	sch := scholar.New("profile.json", "articles.json")
-	sch.SetSource(scholar.SourceKind(*sourcePtr))
+	if err := sch.SetSource(scholar.SourceKind(*sourcePtr)); err != nil {
+		fmt.Println(err)
+		flag.Usage()
+		return
+	}
 	sch.SetAPIKey(*apiKeyPtr)
 	//articles := sch.QueryProfileDumpResponse(user, limit, true)
 	//articles := sch.QueryProfile(user, limit)
@@ -61,7 +65,7 @@ func main() {
 
 	sch.SaveCache("profile.json", "articles.json")
 	sch2 := scholar.New("profile.json", "articles.json")
-	sch2.SetSource(scholar.SourceKind(*sourcePtr))
+	_ = sch2.SetSource(scholar.SourceKind(*sourcePtr)) // validated above
 	sch2.SetAPIKey(*apiKeyPtr)
 	cachedArticles2, err := sch2.QueryProfileWithMemoryCache(user, limit)
 	if err != nil {
