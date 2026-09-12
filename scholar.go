@@ -60,10 +60,18 @@ type source interface {
 	// (the value stored in Article.ScholarURL, which the article cache is
 	// keyed by).
 	fetchArticle(key string) (*Article, error)
+	// listingIsComplete reports whether fetchProfile's articles carry full
+	// details even when details is false. When true, the cache layer can
+	// seed new articles straight from a listing instead of fetching each.
+	listingIsComplete() bool
 }
 
 // googleSource adapts the existing scraper to the source interface.
 type googleSource struct{ sch *Scholar }
+
+// The profile page only lists title, authors, year and citations; details
+// need a per-article fetch.
+func (g googleSource) listingIsComplete() bool { return false }
 
 func (g googleSource) fetchProfile(user string, limit int, details bool) ([]*Article, error) {
 	return g.sch.QueryProfileDumpResponse(user, details, limit, false)
@@ -403,6 +411,10 @@ func (sch *Scholar) QueryProfileWithMemoryCache(user string, limit int) ([]*Arti
 						updated := *existing.(*Article)
 						updated.NumCitations = article.NumCitations
 						sch.articles.Store(article.ScholarURL, &updated)
+					} else if sch.src.listingIsComplete() {
+						// New to the cache and the listing already has full
+						// details: seed it rather than fetching it separately.
+						sch.articles.Store(article.ScholarURL, article)
 					}
 				}
 				newProfile := Profile{User: user, LastRetrieved: time.Now(), Articles: articleList}

@@ -197,3 +197,31 @@ func TestDefaultSourceIsGoogleScholar(t *testing.T) {
 	sch := New("profiles.json", "articles.json")
 	assert.Equal(t, SourceGoogleScholar, sch.Source())
 }
+
+// When an expired profile is refreshed and the listing contains papers that
+// are not yet in the article cache, they must be seeded from the listing
+// (which carries full details) rather than fetched one by one.
+func TestSemanticScholar_RefreshSeedsNewPapersWithoutPerPaperRequests(t *testing.T) {
+	sch, client := newSemanticScholar(t)
+
+	// Populate the cache with only the first page (30 of 47 papers).
+	articles, err := sch.QueryProfileWithMemoryCache("1792904", 30)
+	assert.NoError(t, err)
+	assert.Len(t, articles, 30)
+	assert.Len(t, client.Requests, 1)
+
+	// Expire the profile so the next call refreshes the listing, this time
+	// asking for everything: 17 papers are new to the cache.
+	profileResult, _ := sch.profile.Load("1792904")
+	profile := profileResult.(Profile)
+	profile.LastRetrieved = time.Now().Add(-8 * 24 * time.Hour)
+	sch.profile.Store("1792904", profile)
+
+	articles, err = sch.QueryProfileWithMemoryCache("1792904", 100)
+	assert.NoError(t, err)
+	assert.Len(t, articles, 47)
+	assert.Len(t, client.Requests, 3, "expected only the two listing pages, no per-paper requests")
+	for _, r := range client.Requests {
+		assert.NotContains(t, r.URL.Path, "/graph/v1/paper/")
+	}
+}

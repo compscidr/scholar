@@ -55,6 +55,9 @@ type s2PapersPage struct {
 	Data   []s2Paper `json:"data"`
 }
 
+// Every listing page is requested with the full field set.
+func (s semanticScholarSource) listingIsComplete() bool { return true }
+
 // fetchProfile pages through /author/{id}/papers until limit or the end.
 // Each page already carries full details, so details is ignored.
 func (s semanticScholarSource) fetchProfile(user string, limit int, details bool) ([]*Article, error) {

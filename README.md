@@ -36,9 +36,13 @@ sch.SetAPIKey(os.Getenv("S2_API_KEY")) // optional; raises the rate limit
 articles, err := sch.QueryProfileWithMemoryCache("1792904", 50)
 ```
 Everything else — `Article` fields, the on-disk cache files, throttling and the failure cooldown —
-works the same for both sources. The default source remains Google Scholar. Unauthenticated
-requests share a pool of roughly 100 requests per 5 minutes; a profile fetch is one request per 100
-papers, so a daily or weekly refresh is well within that.
+works the same for both sources. The default source remains Google Scholar.
+
+Request volume: a listing is one request per 100 papers and already carries full details, so a
+first fetch or a profile refresh needs no per-paper requests; new papers are seeded from the
+listing. Individual `/paper/{id}` requests happen only when a cached article has expired (30 days)
+and is being refreshed. Unauthenticated requests share a pool of roughly 100 requests per 5
+minutes, so a daily or weekly refresh is well within that; set an API key if you need more.
 
 ## Features
 Working:
